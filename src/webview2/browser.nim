@@ -1,7 +1,7 @@
 
 import winim
 import com
-import std/[os]
+import std/[os,atomics]
 import syscall
 
 type 
@@ -22,7 +22,7 @@ type
     view: ICoreWebView2
     controller: ICoreWebView2Controller
     settings: ICoreWebView2Settings
-    controllerCompleted: int32
+    controllerCompleted:  Atomic[int32]
 
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window.handle
@@ -91,7 +91,7 @@ proc controllerCompletedHandler(wv: WebView): ICoreWebView2CreateCoreWebView2Con
       syscall(createdController.VTBL.GetCoreWebView2, 2,createdController.addr, createdWebView2.addr)
       wv.browser.view = createdWebView2
       syscall(wv.browser.view.VTBL.AddRef, 1, wv.browser.view.addr, 0, 0)
-      atomic.StoreInt32(&wv.browser.controllerCompleted, 1)
+      wv.browser.controllerCompleted.store(1)
       return 0
   )
   var h = ICoreWebView2CreateCoreWebView2ControllerCompletedHandler(
