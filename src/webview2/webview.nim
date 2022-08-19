@@ -25,13 +25,11 @@ proc newWebView*():WebView =
     zoomControl:          true,
   )
   result = WebView(window:window, browser: browser)
-  let dll = staticReadDll("sqlite3_64.dll")
+  const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
+  let dll = staticReadDll(loaderPath)
   proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): cstring {.cdecl, memlib: result.dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
   result.dll = CreateCoreWebView2EnvironmentWithOptions
- 
-  # result.createWindow()
-  # result.initializeWindow()
-  # result.browser.Navigate(wv.browser.config.initialURL)
+
 proc initializeWindow*(wv: WebView) =
   wv.window.SetTitle(wv.window.config.title)
   wv.window.SetSize(wv.window.config.width, wv.window.config.height)

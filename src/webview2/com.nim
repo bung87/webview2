@@ -67,6 +67,16 @@ type
     RemoveWebResourceRequestedFilter       :HRESULT 
     AddWindowCloseRequested                :HRESULT 
     RemoveWindowCloseRequested             :HRESULT 
+  ICoreWebView2Environment* = object
+    Basic: Basic
+    VTBL: ptr ICoreWebView2EnvironmentVTBL
+  ICoreWebView2EnvironmentVTBL* = object
+    BasicVTBL: BasicVTBL
+    CreateCoreWebView2Controller     :HRESULT
+    CreateWebResourceResponse        :HRESULT
+    GetBrowserVersionString          :HRESULT
+    AddNewBrowserVersionAvailable    :HRESULT
+    RemoveNewBrowserVersionAvailable :HRESULT
   ICoreWebView2Controller* = object
     VTBL: ptr ICoreWebView2ControllerVTBL
   ICoreWebView2ControllerVTBL* = object
