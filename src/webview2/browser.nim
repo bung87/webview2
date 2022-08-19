@@ -82,7 +82,7 @@ proc environmentCompletedHandler(wv: Webview):pointer =
   h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
   return h.addr
 
-proc controllerCompletedHandler(wv: WebView) =
+proc controllerCompletedHandler(wv: WebView): ICoreWebView2CreateCoreWebView2ControllerCompletedHandler  =
   var vtbl = ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL(
     Invoke: proc(i: ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;p: pointer;createdController:ICoreWebView2Controller )=
       syscall(createdController.VTBL.AddRef, 1, createdController.addr,0,0 )
@@ -98,4 +98,4 @@ proc controllerCompletedHandler(wv: WebView) =
     VTBL: vtbl
   )
   h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
-  return 
+  return h

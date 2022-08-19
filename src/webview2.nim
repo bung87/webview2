@@ -3,6 +3,8 @@ import winim
 import winim/inc/winuser
 import winim/inc/mshtml
 import winim/[utils]
+import std/[os]
+# {.passl: "-lole32 -lcomctl32 -lcomdlg32 -loleaut32 -luuid -lgdi32".}
 
 const classname = "WebView"
 
