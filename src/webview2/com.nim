@@ -3,7 +3,9 @@ import winim
 type
   Basic* = object
   BasicVTBL* = object 
-    # QueryInterface 
+    QueryInterface: pointer 
+    AddRef: pointer
+    Release: pointer
   ICoreWebView2* = object
     Basic: Basic
     VTBL: ptr ICoreWebView2VTBL 
@@ -141,6 +143,16 @@ type
   ICoreWebView2Settings* = object
     Basic:Basic
     VTBL: ptr ICoreWebView2SettingsVTBL
+
+proc QueryInterface*(self:Basic;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
+  result = 0
+
+proc AddRef*(self:Basic;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
+  result = 1
+
+proc Release*(self:Basic;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
+  result = 1
+
 
 proc newBasicVTBL*(h: Basic): BasicVTBL =
   result = BasicVTBL(
