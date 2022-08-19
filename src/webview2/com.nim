@@ -2,10 +2,13 @@ import winim
 
 type
   Basic* = object
+  BasicVTBLPtr = ptr BasicVTBL
   BasicVTBL* = object 
-    QueryInterface: pointer 
-    AddRef: pointer
-    Release: pointer
+    QueryInterface: proc (self: BasicVTBLPtr,
+                          riid: ptr UUID,
+                          pvObject: ptr pointer): HRESULT {.gcsafe,stdcall.}
+    AddRef: proc(self: BasicVTBLPtr): ULONG {.gcsafe, stdcall.}
+    Release: proc(self: BasicVTBLPtr): ULONG {.gcsafe, stdcall.}
   ICoreWebView2* = object
     Basic: Basic
     VTBL: ptr ICoreWebView2VTBL 
