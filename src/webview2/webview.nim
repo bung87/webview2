@@ -24,6 +24,9 @@ proc newWebView*():WebView =
     webMessage:           true,
     zoomControl:          true,
   )
+  var browser = Browser(
+    config: browserConfig
+    )
   result = WebView(window:window, browser: browser)
   const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
   let dll = staticReadDll(loaderPath)
