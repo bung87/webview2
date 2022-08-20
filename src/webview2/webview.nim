@@ -37,7 +37,7 @@ proc initializeWindow*(wv: WebView) =
   # wv.window.Focus()
   wv.browser.embed(wv)
   # wv.browser.resize()
-  wv.browser.saveSettings()
+  # wv.browser.saveSettings()
 
 proc init*(wv: WebView) =
   for s in ["WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", "WEBVIEW2_USER_DATA_FOLDER", "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "WEBVIEW2_RELEASE_CHANNEL_PREFERENCE"]:

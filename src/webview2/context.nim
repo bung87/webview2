@@ -8,7 +8,7 @@ type
     store: Table[HWND, WebView]
   WebviewContextStore = ref WebviewContextStoreObj
 
-var webviewContext*: WebviewContextStore
+var webviewContext* = new WebviewContextStore
 webviewContext.mu.initLock()
 
 proc set*(wcs: WebviewContextStore; hwnd: HWND;wv: WebView) = 

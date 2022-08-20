@@ -17,7 +17,7 @@ type
   BrowserObj = object
     hwnd*: HWND
     config*: ptr BrowserConfig
-    view*: ICoreWebView2
+    view*: ref ICoreWebView2
     controller*: ICoreWebView2Controller
     settings*: ICoreWebView2Settings
     controllerCompleted*:  Atomic[int32]
