@@ -1,13 +1,7 @@
 import window, browser
 import std/[os]
 import memlib
-
-type 
-  WebViewObj = RootObj of object
-    dll: proc
-    window: ptr Window
-    browser: ptr Browser
-  WebView* = ref WebViewObj
+import types
 
 proc newWebView*():WebView =
   var windowConfig = WindowConfig(width:640,height:480,title:"Webview")
@@ -30,7 +24,7 @@ proc newWebView*():WebView =
   result = WebView(window:window, browser: browser)
   const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
   let dll = staticReadDll(loaderPath)
-  proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): cstring {.cdecl, memlib: result.dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
+  proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: pointer; environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): cstring {.cdecl, memlib: result.dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
   result.dll = CreateCoreWebView2EnvironmentWithOptions
 
 proc initializeWindow*(wv: WebView) =
