@@ -79,7 +79,7 @@ type
     RemoveWebResourceRequestedFilter       :HRESULT 
     AddWindowCloseRequested                :HRESULT 
     RemoveWindowCloseRequested             :HRESULT 
-  ICoreWebView2Environment* = object
+  ICoreWebView2Environment* {.pure.} = object
     # Basic*: Basic
     lpVtbl*: ptr ICoreWebView2EnvironmentVTBL
   ICoreWebView2EnvironmentVTBL* = object of IUnknownVtbl
