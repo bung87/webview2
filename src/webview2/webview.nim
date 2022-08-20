@@ -1,7 +1,11 @@
 import window, browser
 import std/[os]
-import memlib
-import types
+
+import types,com
+import winim
+
+type PCWSTR* = WideCString
+
 
 proc newWebView*():WebView =
   var windowConfig = WindowConfig(width:640,height:480,title:"Webview")
@@ -21,11 +25,9 @@ proc newWebView*():WebView =
   var browser = Browser(
     config: browserConfig
     )
-  result = WebView(window:window, browser: browser)
-  const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
-  let dll = staticReadDll(loaderPath)
-  proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: pointer; environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): cstring {.cdecl, memlib: result.dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
-  result.dll = CreateCoreWebView2EnvironmentWithOptions
+  result = WebView(window: window, browser: browser)
+ 
+  # result.dll = CreateCoreWebView2EnvironmentWithOptions
 
 proc initializeWindow*(wv: WebView) =
   wv.window.SetTitle(wv.window.config.title)
