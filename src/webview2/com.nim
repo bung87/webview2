@@ -1,25 +1,26 @@
 import winim
 
+# type
+#   BasicPtr = ptr Basic
+#   Basic* = object
+#     QueryInterface: proc (self: BasicPtr,
+#                           riid: ptr UUID,
+#                           pvObject: ptr pointer): HRESULT {.gcsafe,stdcall.}
+#     AddRef: proc(self: BasicPtr): ULONG {.gcsafe, stdcall.}
+#     Release: proc(self: BasicPtr): ULONG {.gcsafe, stdcall.}
+#   BasicVTBLPtr = ptr BasicVTBL
+#   BasicVTBL* = object 
+#     QueryInterface: proc (self: BasicVTBLPtr,
+#                           riid: ptr UUID,
+#                           pvObject: ptr pointer): HRESULT {.gcsafe,stdcall.}
+#     AddRef: proc(self: BasicVTBLPtr): ULONG {.gcsafe, stdcall.}
+#     Release: proc(self: BasicVTBLPtr): ULONG {.gcsafe, stdcall.}
 type
-  BasicPtr = ptr Basic
-  Basic* = object
-    QueryInterface: proc (self: BasicPtr,
-                          riid: ptr UUID,
-                          pvObject: ptr pointer): HRESULT {.gcsafe,stdcall.}
-    AddRef: proc(self: BasicPtr): ULONG {.gcsafe, stdcall.}
-    Release: proc(self: BasicPtr): ULONG {.gcsafe, stdcall.}
-  BasicVTBLPtr = ptr BasicVTBL
-  BasicVTBL* = object 
-    QueryInterface: proc (self: BasicVTBLPtr,
-                          riid: ptr UUID,
-                          pvObject: ptr pointer): HRESULT {.gcsafe,stdcall.}
-    AddRef: proc(self: BasicVTBLPtr): ULONG {.gcsafe, stdcall.}
-    Release: proc(self: BasicVTBLPtr): ULONG {.gcsafe, stdcall.}
-  ICoreWebView2* = object
-    Basic: Basic
-    VTBL: ptr ICoreWebView2VTBL 
-  ICoreWebView2VTBL* = object
-    BasicVTBL: BasicVTBL         
+  ICoreWebView2* {.pure.} = object
+    # Basic: Basic
+    lpVtbl: ptr ICoreWebView2VTBL 
+  ICoreWebView2VTBL* = object of IUnknownVtbl
+    # BasicVTBL: BasicVTBL         
     GetSettings: HRESULT 
     GetSource: HRESULT 
     Navigate                               :HRESULT 
@@ -79,19 +80,19 @@ type
     AddWindowCloseRequested                :HRESULT 
     RemoveWindowCloseRequested             :HRESULT 
   ICoreWebView2Environment* = object
-    Basic*: Basic
-    VTBL*: ptr ICoreWebView2EnvironmentVTBL
-  ICoreWebView2EnvironmentVTBL* = object
-    BasicVTBL*: BasicVTBL
+    # Basic*: Basic
+    lpVtbl*: ptr ICoreWebView2EnvironmentVTBL
+  ICoreWebView2EnvironmentVTBL* = object of IUnknownVtbl
+    # BasicVTBL*: BasicVTBL
     CreateCoreWebView2Controller*     :HRESULT
     CreateWebResourceResponse*        :HRESULT
     GetBrowserVersionString*          :HRESULT
     AddNewBrowserVersionAvailable*    :HRESULT
     RemoveNewBrowserVersionAvailable* :HRESULT
   ICoreWebView2Controller* = object
-    VTBL*: ptr ICoreWebView2ControllerVTBL
-  ICoreWebView2ControllerVTBL* = object
-    BasicVTBL: BasicVTBL
+    lpVtbl*: ptr ICoreWebView2ControllerVTBL
+  ICoreWebView2ControllerVTBL* = object of IUnknownVtbl
+    # BasicVTBL: BasicVTBL
     GetIsVisible*                      :HRESULT
     PutIsVisible*                      :HRESULT
     GetBounds*                         :HRESULT
@@ -115,22 +116,22 @@ type
     NotifyParentWindowPositionChanged* :HRESULT
     Close*                             :HRESULT
     GetCoreWebView2*                   :HRESULT
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* = object
-    Basic*:Basic
-    VTBL*:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* = object
-    BasicVTBL*:BasicVTBL
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure.} = object
+    # Basic*:Basic
+    lpVtbl*:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* = object of IUnknownVtbl
+    # BasicVTBL*:BasicVTBL
     Invoke*:HRESULT
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke* = proc (i: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; p:HRESULT;createdEnvironment:ptr ICoreWebView2Environment)
-  ICoreWebView2CreateCoreWebView2ControllerCompletedHandler* = object
-    Basic*:Basic
-    VTBL*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
-  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL* = object
-    BasicVTBL*:BasicVTBL
+  ICoreWebView2CreateCoreWebView2ControllerCompletedHandler* {.pure.} = object
+    # Basic*:Basic
+    lpVtbl*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
+  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL* =  object of IUnknownVtbl
+    # BasicVTBL*:BasicVTBL
     Invoke*: pointer
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvoke* = proc (i: ptr  ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;p:HRESULT;createdController: ptr ICoreWebView2Controller  )
-  ICoreWebView2SettingsVTBL* = object
-    BasicVTBL*:BasicVTBL
+  ICoreWebView2SettingsVTBL* = object of IUnknownVtbl
+    # BasicVTBL*:BasicVTBL
     GetIsScriptEnabled*                :HRESULT
     PutIsScriptEnabled*                :HRESULT
     GetIsWebMessageEnabled*            :HRESULT
@@ -149,23 +150,23 @@ type
     PutIsZoomControlEnabled*           :HRESULT
     GetIsBuiltInErrorPageEnabled*      :HRESULT
     PutIsBuiltInErrorPageEnabled*      :HRESULT
-  ICoreWebView2Settings* = object
-    Basic*:Basic
-    VTBL*: ptr ICoreWebView2SettingsVTBL
+  ICoreWebView2Settings* {.pure.} = object
+    # Basic*:Basic
+    lpVtbl*: ptr ICoreWebView2SettingsVTBL
 
-proc QueryInterface*(self:BasicPtr;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
-  result = 0
+# proc QueryInterface*(self:BasicPtr;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
+#   result = 0
 
-proc AddRef*(self:BasicPtr;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
-  result = 1
+# proc AddRef*(self:BasicPtr;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
+#   result = 1
 
-proc Release*(self:BasicPtr;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
-  result = 1
+# proc Release*(self:BasicPtr;_:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):HRESULT =
+#   result = 1
 
 
-proc newBasicVTBL*(h: BasicPtr): BasicVTBL =
-  result = BasicVTBL(
-    QueryInterface: cast[BasicVTBLPtr](h).QueryInterface,
-    AddRef:         cast[BasicVTBLPtr](h).AddRef,
-    Release:        cast[BasicVTBLPtr](h).Release,
-  )
+# proc newBasicVTBL*(h: BasicPtr): BasicVTBL =
+#   result = BasicVTBL(
+#     QueryInterface: cast[BasicVTBLPtr](h).QueryInterface,
+#     AddRef:         cast[BasicVTBLPtr](h).AddRef,
+#     Release:        cast[BasicVTBLPtr](h).Release,
+#   )

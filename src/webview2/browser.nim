@@ -8,29 +8,29 @@ import std/[os]
 proc controllerCompletedHandler*(wv: WebView): ICoreWebView2CreateCoreWebView2ControllerCompletedHandler  =
   var vtbl = ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL(
     Invoke: proc(i: ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;p: pointer;createdController:ICoreWebView2Controller )=
-      syscall(createdController.VTBL.AddRef, 1, createdController.addr,0,0 )
+      syscall(createdController.lpVtbl.AddRef, 1, createdController.addr,0,0 )
       wv.browser.controller = createdController
       var createdWebView2: ICoreWebView2
-      syscall(createdController.VTBL.GetCoreWebView2, 2,createdController.addr, createdWebView2.addr)
+      syscall(createdController.lpVtbl.GetCoreWebView2, 2,createdController.addr, createdWebView2.addr)
       wv.browser.view = createdWebView2
-      syscall(wv.browser.view.VTBL.AddRef, 1, wv.browser.view.addr, 0, 0)
+      syscall(wv.browser.view.lpVtbl.AddRef, 1, wv.browser.view.addr, 0, 0)
       wv.browser.controllerCompleted.store(1)
       return 0
   )
   var h = ICoreWebView2CreateCoreWebView2ControllerCompletedHandler(
-    VTBL: vtbl
+    lpVtbl: vtbl
   )
-  h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
+  # h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
   return h
 
 proc environmentCompletedHandler*(wv: Webview):pointer =
   var h = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler(
-    VTBL:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL(
+    lpVtbl:ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL(
       Invoke: proc(i: clong;p: clong;createdEnvironment: ICoreWebView2Environment) =
-        syscall(createdEnvironment.VTBL.CreateCoreWebView2Controller, 3, createdEnvironment.addr,wv.window.handle.addr,wv.controllerCompletedHandler())
+        syscall(createdEnvironment.lpVtbl.CreateCoreWebView2Controller, 3, createdEnvironment.addr,wv.window.handle.addr,wv.controllerCompletedHandler())
     )
   )
-  h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
+  # h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
   return h.addr
 
 proc embed*(b: Browser; wv: WebView) =
