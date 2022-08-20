@@ -1,20 +1,22 @@
 import std/[locks, tables]
 import winim
-import webview
+import types
 
-type WebviewContextStore = object
-  mu: Lock
-  store: Table[HWND, WebView]
+type 
+  WebviewContextStoreObj = object
+    mu: Lock
+    store: Table[HWND, WebView]
+  WebviewContextStore = ref WebviewContextStoreObj
 
 var webviewContext*: WebviewContextStore
 webviewContext.mu.initLock()
 
-proc set*(wcs: WebviewContext; hwnd: HWND;wv: WebView) = 
+proc set*(wcs: WebviewContextStore; hwnd: HWND;wv: WebView) = 
   wcs.mu.acquire
-  defer wcs.mu.release
+  defer: wcs.mu.release
   wcs.store[hwnd] = wv
 
-proc get*(hwnd: HWND;):WebView =
+proc get*(wcs: WebviewContextStore;hwnd: HWND;):WebView =
   wcs.mu.acquire
-  defer wcs.mu.release
+  defer: wcs.mu.release
   return wcs.store[hwnd]

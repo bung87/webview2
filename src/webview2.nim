@@ -1,9 +1,10 @@
-import webview2/[types,webview]
+import webview2/[types,webview,browser,context]
 import winim
 import winim/inc/winuser
 import winim/inc/mshtml
 import winim/[utils]
 import std/[os]
+
 # {.passl: "-lole32 -lcomctl32 -lcomdlg32 -loleaut32 -luuid -lgdi32".}
 
 const classname = "WebView"
@@ -31,19 +32,12 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
 
     case msg
       of WM_SIZE:
-        var webBrowser2:ptr IWebBrowser2
-        var browser = w[].priv.browser
-        if browser[].QueryInterface( &IID_IWebBrowser2,
-                                          cast[ptr pointer](webBrowser2.addr)) == S_OK:
-          var rect: RECT
-          GetClientRect(hwnd, &rect)
-          webBrowser2.put_Width(rect.right)
-          webBrowser2.put_Height(rect.bottom)
+        w.browser.resize()
 
       of WM_CREATE:
         let cs = cast[ptr CREATESTRUCT](lParam)
         w = cast[Webview](cs.lpCreateParams)
-        w[].priv.hwnd = hwnd
+        w[].window.handle = hwnd
         return EmbedBrowserObject(w)
 
       of WM_DESTROY:
@@ -78,13 +72,13 @@ proc  webview_init*(w: Webview): cint =
   RegisterClassEx(&wc)
 
   style = WS_OVERLAPPEDWINDOW
-  if not w.resizable:
-    style = WS_OVERLAPPED or WS_CAPTION or WS_MINIMIZEBOX or WS_SYSMENU
+  # if not w.resizable:
+  #   style = WS_OVERLAPPED or WS_CAPTION or WS_MINIMIZEBOX or WS_SYSMENU
 
   rect.left = 0;
   rect.top = 0;
-  rect.right = w.width;
-  rect.bottom = w.height;
+  rect.right = w.window.config.width
+  rect.bottom = w.window.config.height
   AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0)
 
   GetClientRect(GetDesktopWindow(), &clientRect)
@@ -95,21 +89,21 @@ proc  webview_init*(w: Webview): cint =
   rect.bottom = rect.bottom - rect.top + top
   rect.top = top
 
-  w[].priv.hwnd = CreateWindowEx(0, classname, w.title, style, rect.left, rect.top,
+  w.window.handle = CreateWindowEx(0, classname, w.window.config.title, style, rect.left, rect.top,
                      rect.right - rect.left, rect.bottom - rect.top,
                      HWND_DESKTOP, cast[HMENU](NULL), hInstance, w)
-  if (w[].priv.hwnd == 0):
+  if (w.window.handle == 0):
     OleUninitialize()
     return -1
 
-  SetWindowLongPtr(w[].priv.hwnd, GWLP_USERDATA, cast[LONG_PTR](w))
-  webviewContext.set(wv.window.handle, wv)
+  SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
+  webviewContext.set(w.window.handle, w)
   # discard DisplayHTMLPage(w)
 
-  SetWindowText(w[].priv.hwnd, w.title)
-  ShowWindow(w[].priv.hwnd, SW_SHOWDEFAULT)
-  UpdateWindow(w[].priv.hwnd)
-  SetFocus(w[].priv.hwnd)
+  SetWindowText(w.window.handle, w.window.config.title)
+  ShowWindow(w.window.handle, SW_SHOWDEFAULT)
+  UpdateWindow(w.window.handle)
+  SetFocus(w.window.handle)
 
   return 0
 
@@ -128,20 +122,20 @@ proc webview_loop*(w: Webview, blocking:cint):cint =
    WM_KEYUP: 
     if (msg.wParam == VK_F5):
       return 0
-    var r:HRESULT = S_OK
-    var webBrowser2:ptr IWebBrowser2
-    var browser = w.priv.browser
-    if (browser[].QueryInterface( &IID_IWebBrowser2,
-                                        cast[ptr pointer](webBrowser2.addr)) == S_OK) :
-      var pIOIPAO:ptr IOleInPlaceActiveObject
-      if (browser[].QueryInterface( &IID_IOleInPlaceActiveObject,
-              cast[ptr pointer](pIOIPAO.addr)) == S_OK):
-        r = pIOIPAO.TranslateAccelerator(msg.addr)
-        discard pIOIPAO.lpVtbl.Release(cast[ptr IUnknown](pIOIPAO))
-      discard webBrowser2.lpVtbl.Release(cast[ptr IUnknown](webBrowser2))
+    # var r:HRESULT = S_OK
+    # var webBrowser2:ptr IWebBrowser2
+    # var browser = w.priv.browser
+    # if (browser[].QueryInterface( &IID_IWebBrowser2,
+    #                                     cast[ptr pointer](webBrowser2.addr)) == S_OK) :
+    #   var pIOIPAO:ptr IOleInPlaceActiveObject
+    #   if (browser[].QueryInterface( &IID_IOleInPlaceActiveObject,
+    #           cast[ptr pointer](pIOIPAO.addr)) == S_OK):
+    #     r = pIOIPAO.TranslateAccelerator(msg.addr)
+    #     discard pIOIPAO.lpVtbl.Release(cast[ptr IUnknown](pIOIPAO))
+    #   discard webBrowser2.lpVtbl.Release(cast[ptr IUnknown](webBrowser2))
     
-    if (r != S_FALSE):
-      return
+    # if (r != S_FALSE):
+    #   return
   
   else:
     TranslateMessage(msg.addr)

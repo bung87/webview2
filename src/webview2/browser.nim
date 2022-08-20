@@ -40,6 +40,10 @@ proc environmentCompletedHandler*(wv: Webview):ICoreWebView2CreateCoreWebView2En
   )
   # h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
   # return h.addr
+proc resize*(b: Browser) =
+  var bounds: RECT 
+  GetClientRect(b.hwnd, bounds)
+  syscall(b.controller.lpVtbl.PutBounds,2, cast[clong](b.controller.addr), cast[clong](bounds.addr))
 
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
