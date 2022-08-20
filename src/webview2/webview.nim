@@ -45,3 +45,4 @@ proc init*(wv: WebView) =
   # wv.createWindow()
   wv.initializeWindow()
   wv.browser.navigate(wv.browser.config.initialURL)
+

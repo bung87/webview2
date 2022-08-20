@@ -38,10 +38,10 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
         let cs = cast[ptr CREATESTRUCT](lParam)
         w = cast[Webview](cs.lpCreateParams)
         w[].window.handle = hwnd
-        return EmbedBrowserObject(w)
+        # return EmbedBrowserObject(w)
 
       of WM_DESTROY:
-        UnEmbedBrowserObject(w)
+        # UnEmbedBrowserObject(w)
         PostQuitMessage(0)
         return TRUE
       else:
@@ -91,7 +91,7 @@ proc  webview_init*(w: Webview): cint =
 
   w.window.handle = CreateWindowEx(0, classname, w.window.config.title, style, rect.left, rect.top,
                      rect.right - rect.left, rect.bottom - rect.top,
-                     HWND_DESKTOP, cast[HMENU](NULL), hInstance, w)
+                     HWND_DESKTOP, cast[HMENU](NULL), hInstance, NULL)
   if (w.window.handle == 0):
     OleUninitialize()
     return -1
@@ -142,3 +142,27 @@ proc webview_loop*(w: Webview, blocking:cint):cint =
     DispatchMessage(msg.addr)
   
   return 0
+
+proc run*(w: Webview) {.inline.} =
+  ## `run` starts the main UI loop until the user closes the window or `exit()` is called.
+  block mainLoop:
+    while w.webview_loop(1) == 0: discard
+  
+proc run*(w: Webview, quitProc: proc () {.noconv.}, controlCProc: proc () {.noconv.}, autoClose: static[bool] = true) {.inline.} =
+  ## `run` starts the main UI loop until the user closes the window. Same as `run` but with extras.
+  ## * `quitProc` is a function to run at exit, needs `{.noconv.}` pragma.
+  ## * `controlCProc` is a function to run at CTRL+C, needs `{.noconv.}` pragma.
+  ## * `autoClose` set to `true` to automatically run `exit()` at exit.
+  system.addQuitProc(quitProc)
+  system.setControlCHook(controlCProc)
+  block mainLoop:
+    while w.webview_loop(1) == 0: discard
+  # when autoClose:
+  #   w.webview_terminate()
+  #   w.webview_exit()
+
+when isMainModule:
+  var v = newWebView()
+  discard v.webview_init()
+  v.init
+  v.run
