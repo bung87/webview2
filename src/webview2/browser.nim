@@ -8,8 +8,8 @@ import memlib
 
 const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
 const dll = staticReadDll(loaderPath)
-proc CreateCoreWebView2EnvironmentWithOptions*(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT {.cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
-
+proc CreateCoreWebView2EnvironmentWithOptions*(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT {.cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
+proc GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder:PCWSTR ; versionInfo:ptr LPWSTR;)  {.cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString".}
 
 proc controllerCompletedHandler(wv: WebView): ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   var vtbl = ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL(
@@ -54,7 +54,10 @@ proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
   let dataPath = getEnv("AppData") /  extractFilename(exePath)
-  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, nil, wv.environmentCompletedHandler())
+  var versionInfo: LPWSTR 
+  GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
+  var h = wv.environmentCompletedHandler()
+  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, NULL, h.addr)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
   while GetMessage(msg.addr, 0, 0, 0)<0:
