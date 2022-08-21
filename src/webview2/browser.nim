@@ -31,7 +31,7 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
   var vtbl = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL(
       Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT =
         var handler = wv.controllerCompletedHandler()
-        discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment[], wv.window[].handle, handler)
+        discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment, wv.window[].handle, handler)
         return 0
         )
   result.lpVtbl = vtbl.addr
@@ -48,7 +48,6 @@ proc embed*(b: Browser; wv: WebView) =
   var versionInfo: LPWSTR 
   GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   var h = wv.environmentCompletedHandler()
-  echo repr h
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, NULL, h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG

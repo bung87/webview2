@@ -28,7 +28,12 @@ proc newWebView*():WebView =
     )
   result.window = window
   result.browser = browser
- 
+  # try:
+  #   if CoInitializeEx(nil, COINIT_APARTMENTTHREADED).FAILED: raise
+  #   defer: CoUninitialize()
+  # except:
+  #   discard
+
   # result.dll = CreateCoreWebView2EnvironmentWithOptions
 
 proc initializeWindow*(wv: WebView) =
