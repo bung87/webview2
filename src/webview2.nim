@@ -9,24 +9,6 @@ import std/[os]
 
 const classname = "WebView"
 
-const WEBVIEW_KEY_FEATURE_BROWSER_EMULATION = "Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION"
-
-proc webview_fix_ie_compat_mode():int =
-  var hKey:HKEY
-  var ie_version:DWORD = 11000
-  let p = extractFilename(getAppFilename())
-  if (RegCreateKey(HKEY_CURRENT_USER, WEBVIEW_KEY_FEATURE_BROWSER_EMULATION,
-                   &hKey) != ERROR_SUCCESS) :
-    return -1
-  
-  if (RegSetValueEx(hKey, p, 0, REG_DWORD, cast[ptr BYTE](ie_version.addr),
-                    sizeof(ie_version).DWORD) != ERROR_SUCCESS) :
-    RegCloseKey(hKey)
-    return -1
-  
-  RegCloseKey(hKey)
-  return 0
-
 proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.stdcall.} =
     var w = cast[Webview](GetWindowLongPtr(hwnd, GWLP_USERDATA))
 
@@ -54,9 +36,6 @@ proc  webview_init*(w: Webview): cint =
   var style:DWORD
   var clientRect:RECT
   var rect:RECT
-
-  if (webview_fix_ie_compat_mode() < 0):
-    return -1
 
   hInstance = GetModuleHandle(NULL)
   if hInstance == 0:
