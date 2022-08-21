@@ -155,7 +155,7 @@ type
     = object of IUnknownVtbl
     # BasicVTBL*:BasicVTBL
     Invoke*: proc(i: ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-        errorCode:HRESULT; createdController: ICoreWebView2Controller)
+        errorCode:HRESULT; createdController: ICoreWebView2Controller): HRESULT
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvok* = proc (
       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
       p: HRESULT; createdController: ptr ICoreWebView2Controller)
