@@ -107,7 +107,7 @@ type
     GetIsVisible*: HRESULT
     PutIsVisible*: HRESULT
     GetBounds*: HRESULT
-    PutBounds*: proc(self: ICoreWebView2Controller; bounds: RECT): HRESULT
+    PutBounds*: proc(self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT
     GetZoomFactor*: HRESULT
     PutZoomFactor*: HRESULT
     AddZoomFactorChanged*: HRESULT
@@ -126,14 +126,14 @@ type
     PutParentWindow*: HRESULT
     NotifyParentWindowPositionChanged*: HRESULT
     Close*: HRESULT
-    GetCoreWebView2*: proc (self:ICoreWebView2Controller;coreWebView2: ptr ref ICoreWebView2): HRESULT
+    GetCoreWebView2*: proc (self:ptr ICoreWebView2Controller;coreWebView2: ptr ptr ICoreWebView2): HRESULT
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure.} = object
     # Basic*:Basic
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL *
     = object of IUnknownVtbl
     # BasicVTBL*:BasicVTBL
-    Invoke*: proc(i: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+    Invoke*: proc(i:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
          errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke * = proc (
       i: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
@@ -146,16 +146,16 @@ type
   ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandlerVTBL
   ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandlerVTBL* = object of IUnknownVtbl
-    Invoke*: proc (self: ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler;
-        errorCode: HRESULT; id: LPCWSTR)
+    Invoke*: proc (self:ptr ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler;
+        errorCode: HRESULT; id: LPCWSTR) {.stdcall.}
   ICoreWebView2ExecuteScriptCompletedHandlerVTBL * = object of IUnknownVtbl
     Invoke*: proc (self: ICoreWebView2ExecuteScriptCompletedHandler;
-        errorCode: HRESULT; resultObjectAsJson: LPCWSTR)
+        errorCode: HRESULT; resultObjectAsJson: LPCWSTR) {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL*
     = object of IUnknownVtbl
     # BasicVTBL*:BasicVTBL
-    Invoke*: proc(i: ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-        errorCode:HRESULT; createdController: ICoreWebView2Controller): HRESULT
+    Invoke*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+        errorCode:HRESULT; createdController:ptr ICoreWebView2Controller): HRESULT
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvok* = proc (
       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
       p: HRESULT; createdController: ptr ICoreWebView2Controller)
