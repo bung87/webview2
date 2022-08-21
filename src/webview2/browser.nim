@@ -45,8 +45,9 @@ proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
   var dataPath = getEnv("AppData") /  extractFilename(exePath)
-  var versionInfo: LPWSTR 
-  GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
+  # var versionInfo: LPWSTR 
+  # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
+  # CoTaskMemFree(versionInfo)
   var h = wv.environmentCompletedHandler()
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, NULL, h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
