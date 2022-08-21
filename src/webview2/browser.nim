@@ -1,7 +1,6 @@
 
 import winim
 import com
-# import syscall
 import types
 import std/[os,atomics]
 import memlib
@@ -27,21 +26,21 @@ proc controllerCompletedHandler(wv: WebView): ICoreWebView2CreateCoreWebView2Con
       # return 0
   )
   result = ICoreWebView2CreateCoreWebView2ControllerCompletedHandler(
-    lpVtbl: vtbl
+    lpVtbl: vtbl.addr
   )
   # h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
 
 proc environmentCompletedHandler*(wv: Webview):ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   
-  var invoke = proc(i: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;errorCode:HRESULT ;createdEnvironment: ptr ICoreWebView2Environment):HRESULT =
+  var invoke = proc(i: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT =
     # syscall(createdEnvironment.lpVtbl.CreateCoreWebView2Controller, 3, cast[clong](createdEnvironment.addr), cast[clong](wv.window.handle.addr),  cast[clong](wv.controllerCompletedHandler()) )
     var handler = wv.controllerCompletedHandler()
-    createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment[], wv.window.handle, handler.addr)
+    createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment[], wv.window[].handle, handler.addr)
   var vtbl = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL(
       Invoke: invoke
     )
   result = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler(
-    lpVtbl:vtbl
+    lpVtbl: vtbl.addr
   )
 
 proc resize*(b: Browser) =
@@ -53,7 +52,7 @@ proc resize*(b: Browser) =
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
-  let dataPath = getEnv("AppData") /  extractFilename(exePath)
+  var dataPath = getEnv("AppData") /  extractFilename(exePath)
   var versionInfo: LPWSTR 
   GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   var h = wv.environmentCompletedHandler()

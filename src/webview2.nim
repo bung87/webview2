@@ -38,6 +38,7 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
         let cs = cast[ptr CREATESTRUCT](lParam)
         w = cast[Webview](cs.lpCreateParams)
         w[].window.handle = hwnd
+        w.browser.embed(w)
         # return EmbedBrowserObject(w)
 
       of WM_DESTROY:
