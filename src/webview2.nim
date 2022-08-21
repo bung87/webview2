@@ -74,7 +74,6 @@ proc  webview_init*(w: Webview): cint =
   style = WS_OVERLAPPEDWINDOW
   # if not w.resizable:
   #   style = WS_OVERLAPPED or WS_CAPTION or WS_MINIMIZEBOX or WS_SYSMENU
-
   rect.left = 0;
   rect.top = 0;
   rect.right = w.window.config.width
@@ -88,10 +87,9 @@ proc  webview_init*(w: Webview): cint =
   rect.left = left
   rect.bottom = rect.bottom - rect.top + top
   rect.top = top
-
   w.window.handle = CreateWindowEx(0, classname, w.window.config.title, style, rect.left, rect.top,
                      rect.right - rect.left, rect.bottom - rect.top,
-                     HWND_DESKTOP, cast[HMENU](NULL), hInstance, NULL)
+                     HWND_DESKTOP, cast[HMENU](NULL), hInstance, cast[LPVOID](w))
   if (w.window.handle == 0):
     OleUninitialize()
     return -1
@@ -100,10 +98,10 @@ proc  webview_init*(w: Webview): cint =
   webviewContext.set(w.window.handle, w)
   # discard DisplayHTMLPage(w)
 
-  SetWindowText(w.window.handle, w.window.config.title)
-  ShowWindow(w.window.handle, SW_SHOWDEFAULT)
-  UpdateWindow(w.window.handle)
-  SetFocus(w.window.handle)
+  # SetWindowText(w.window.handle, w.window.config.title)
+  # ShowWindow(w.window.handle, SW_SHOWDEFAULT)
+  # UpdateWindow(w.window.handle)
+  # SetFocus(w.window.handle)
 
   return 0
 
@@ -165,4 +163,5 @@ when isMainModule:
   var v = newWebView()
   discard v.webview_init()
   v.init
+  
   v.run

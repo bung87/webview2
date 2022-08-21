@@ -8,6 +8,7 @@ type PCWSTR* = WideCString
 
 
 proc newWebView*():WebView =
+  result = new WebView
   var windowConfig = WindowConfig(width:640,height:480,title:"Webview")
   var window = Window(config:windowConfig)
   var browserConfig = BrowserConfig(
@@ -25,7 +26,8 @@ proc newWebView*():WebView =
   var browser = Browser(
     config: browserConfig
     )
-  result = WebView(window: window, browser: browser)
+  result.window = window
+  result.browser = browser
  
   # result.dll = CreateCoreWebView2EnvironmentWithOptions
 

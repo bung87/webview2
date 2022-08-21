@@ -43,8 +43,7 @@ proc environmentCompletedHandler*(wv: Webview):ICoreWebView2CreateCoreWebView2En
   result = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler(
     lpVtbl:vtbl
   )
-  # h.VTBL.BasicVTBL = newBasicVTBL(h.Basic)
-  # return h.addr
+
 proc resize*(b: Browser) =
   var bounds: RECT 
   GetClientRect(b.hwnd, bounds)
@@ -55,9 +54,8 @@ proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
   let dataPath = getEnv("AppData") /  extractFilename(exePath)
-  let r1 = CreateCoreWebView2EnvironmentWithOptions(newWideCString(""), newWideCString(dataPath), nil, wv.environmentCompletedHandler())
-  # let hr1 = HRESULT(r1)
-  # if hr1 != S_OK:
+  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, nil, wv.environmentCompletedHandler())
+  doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
   while GetMessage(msg.addr, 0, 0, 0)<0:
     break
@@ -66,8 +64,7 @@ proc embed*(b: Browser; wv: WebView) =
   var settings: ICoreWebView2Settings
   # let r = syscall(b.view.lpVtbl.GetSettings, 2, cast[clong](b.view.addr),  cast[clong](settings.addr))
   let r = b.view.lpVtbl.GetSettings(b.view[],settings.addr)
-  let hr = r.HRESULT
-  # if hr != S_OK:
+  doAssert r == S_OK, "failed to get webview settings"
   
   b.settings = settings
 

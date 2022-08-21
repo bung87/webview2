@@ -16,7 +16,7 @@ type
     zoomControl*          :bool
   BrowserObj = object
     hwnd*: HWND
-    config*: ptr BrowserConfig
+    config*: BrowserConfig
     view*: ref ICoreWebView2
     controller*: ICoreWebView2Controller
     settings*: ICoreWebView2Settings
@@ -31,7 +31,7 @@ type WindowConfig* = object
 
 type 
   WindowObj = object
-    config*: ptr WindowConfig
+    config*: WindowConfig
     handle*: HWND
   Window* = ref WindowObj
 # https://arsd-official.dpldocs.info/arsd.webview.ICoreWebView2EnvironmentOptions.html
