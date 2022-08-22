@@ -14,27 +14,38 @@ withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptio
 withPragma {cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString"}:
   proc GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder:PCWSTR ; versionInfo:ptr LPWSTR;)
 
+type ControllerCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
+  controller: ptr ICoreWebView2Controller
+  view: ptr ICoreWebView2
+
+type EnvironmentCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
+  controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
+  handle: HWND
+
 proc controllerCompletedHandler(wv: WebView):ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
-  var vtbl = ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL(
-    Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler; errorCode:HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT =
+  var vtbl = ControllerCompletedHandlerVTBL(
+    Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler; errorCode:HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
       discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
-      wv.browser.controller = createdController
+      cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).controller = createdController
       var createdWebView2: ptr ICoreWebView2
       discard createdController.lpVtbl.GetCoreWebView2(createdController, createdWebView2.addr)
-      wv.browser.view = createdWebView2
-      discard wv.browser.view.lpVtbl.AddRef(cast[ptr IUnknown](wv.browser.view))
-      wv.browser.controllerCompleted.store(1)
+      cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view = createdWebView2
+      discard cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view.lpVtbl.AddRef(cast[ptr IUnknown](cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view))
+      # wv.browser.controllerCompleted.store(1)
       return 0
   )
-  result.lpVtbl = vtbl.addr
+  result.lpVtbl = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL](vtbl.addr)
+  wv.browser.controller = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).controller
+  wv.browser.view = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).view
 
 proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   result = cast[ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler](alloc0(sizeof(ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler)))
-  var vtbl = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL(
-      Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT =
-        var handler = wv.controllerCompletedHandler()
-        discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment, wv.window[].handle, handler)
+  var vtbl = EnvironmentCompletedHandlerVTBL(
+      handle: wv.window[].handle,
+      controllerCompletedHandler: wv.controllerCompletedHandler(),
+      Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
+        discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment,  cast[ptr EnvironmentCompletedHandlerVTBL](self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](self.lpVtbl).controllerCompletedHandler)
         return 0
         )
   result.lpVtbl = vtbl.addr

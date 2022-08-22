@@ -108,15 +108,14 @@ type
     NotifyParentWindowPositionChanged*: HRESULT
     Close*: HRESULT
     GetCoreWebView2*: proc (self:ptr ICoreWebView2Controller;coreWebView2: ptr ptr ICoreWebView2): HRESULT
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure.} = object
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL *
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL*
     = object of IUnknownVtbl
-    Invoke*: proc(i:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
-         errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT
+    Invoke*: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke * = proc (
-      i: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
-      p: HRESULT; createdEnvironment: ptr ICoreWebView2Environment)
+      self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+      p: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
   ICoreWebView2ExecuteScriptCompletedHandler* {.pure.} = object
@@ -132,7 +131,7 @@ type
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL*
     = object of IUnknownVtbl
     Invoke*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-        errorCode:HRESULT; createdController:ptr ICoreWebView2Controller): HRESULT
+        errorCode:HRESULT; createdController:ptr ICoreWebView2Controller): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvok* = proc (
       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
       p: HRESULT; createdController: ptr ICoreWebView2Controller)
