@@ -7,9 +7,12 @@ import memlib
 
 const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
 const dll = staticReadDll(loaderPath)
-proc CreateCoreWebView2Environment(environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT {.cdecl, memlib: dll, importc: "CreateCoreWebView2Environment".}
-proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT {.cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions".}
-proc GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder:PCWSTR ; versionInfo:ptr LPWSTR;)  {.cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString".}
+withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2Environment"}:
+  proc CreateCoreWebView2Environment(environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
+withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions"}:
+  proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT 
+withPragma {cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString"}:
+  proc GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder:PCWSTR ; versionInfo:ptr LPWSTR;)
 
 proc controllerCompletedHandler(wv: WebView):ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
@@ -49,7 +52,8 @@ proc embed*(b: Browser; wv: WebView) =
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # CoTaskMemFree(versionInfo)
   var h = wv.environmentCompletedHandler()
-  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, NULL, h)
+  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, NULL, h)
+  # let r1 = CreateCoreWebView2Environment(h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
   while GetMessage(msg.addr, 0, 0, 0)<0:
