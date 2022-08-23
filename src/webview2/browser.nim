@@ -36,6 +36,12 @@ proc controllerCompletedHandler(wv: WebView):ptr ICoreWebView2CreateCoreWebView2
       return 0
   )
   result.lpVtbl = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL](vtbl.addr)
+  result.lpVtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}= 1
+  result.lpVtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}= 1
+  result.lpVtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT {.stdcall.} = 
+    ppvObject[] = self
+    discard self.lpVtbl.AddRef(self)
+    return S_OK
   wv.browser.controller = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).controller
   wv.browser.view = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).view
 
@@ -49,6 +55,12 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
         return 0
         )
   result.lpVtbl = vtbl.addr
+  result.lpVtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}= 1
+  result.lpVtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}= 1
+  result.lpVtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT {.stdcall.} = 
+    ppvObject[] = self
+    discard self.lpVtbl.AddRef(self)
+    return S_OK
 
 proc resize*(b: Browser) =
   var bounds: RECT 

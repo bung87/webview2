@@ -122,11 +122,14 @@ type
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL *
-    = object of IUnknownVtbl
+    = object {.pure, inheritable.}
+    AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}
+    Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}
+    QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT  {.stdcall.}
     Invoke*: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke * = proc (
       self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
-      p: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.}
+      errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandler * {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
   ICoreWebView2ExecuteScriptCompletedHandler * {.pure.} = object
@@ -142,9 +145,12 @@ type
     Invoke*: proc (self: ICoreWebView2ExecuteScriptCompletedHandler;
         errorCode: HRESULT; resultObjectAsJson: LPCWSTR) {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL *
-    = object of IUnknownVtbl
+    = object {.pure, inheritable.}
+    AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}
+    Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}
     Invoke*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
         errorCode: HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
+    QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT  {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvok * = proc (
       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
       p: HRESULT; createdController: ptr ICoreWebView2Controller)
