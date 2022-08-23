@@ -2,17 +2,24 @@
 import winim
 import com
 import types
-import std/[os,atomics]
+import std/[os, atomics, dynlib]
 import memlib
 
-const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" / "WebView2Loader.dll"
+const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" /
+    "WebView2Loader.dll"
 const dll = staticReadDll(loaderPath)
-withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2Environment"}:
-  proc CreateCoreWebView2Environment(environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
-withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions"}:
-  proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT 
+ # withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2Environment"}:
+#   proc CreateCoreWebView2Environment(environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
+ # withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions"}:
+#   proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
 withPragma {cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString"}:
-  proc GetAvailableCoreWebView2BrowserVersionString(browserExecutableFolder:PCWSTR ; versionInfo:ptr LPWSTR;)
+  proc GetAvailableCoreWebView2BrowserVersionString(
+    browserExecutableFolder: PCWSTR; versionInfo: ptr LPWSTR; )
+
+type CreateCoreWebView2EnvironmentWithOptions = proc(
+    browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR;
+    environmentOptions: ptr ICoreWebView2EnvironmentOptions;
+    environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT {.stdcall.}
 
 type ControllerCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
   controller: ptr ICoreWebView2Controller
@@ -22,71 +29,97 @@ type EnvironmentCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2
   controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
   handle: HWND
 
-proc controllerCompletedHandler(wv: WebView):ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
-  result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
+proc controllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
+  result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](
+      alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
   var vtbl = ControllerCompletedHandlerVTBL(
-    Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler; errorCode:HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
-      discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
-      cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).controller = createdController
-      var createdWebView2: ptr ICoreWebView2
-      discard createdController.lpVtbl.GetCoreWebView2(createdController, createdWebView2.addr)
-      cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view = createdWebView2
-      discard cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view.lpVtbl.AddRef(cast[ptr IUnknown](cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view))
-      # wv.browser.controllerCompleted.store(1)
-      return 0
+    Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+        errorCode: HRESULT;
+        createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
+    discard createdController.lpVtbl.GetCoreWebView2(createdController, cast[
+        ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view.addr)
+    discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
+    cast[ptr ControllerCompletedHandlerVTBL](
+        self.lpVtbl).controller = createdController
+
+    discard cast[ptr ControllerCompletedHandlerVTBL](
+        self.lpVtbl).view.lpVtbl.AddRef(cast[ptr IUnknown](cast[
+        ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view))
+    # wv.browser.controllerCompleted.store(1)
+    return 0
   )
   result.lpVtbl = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL](vtbl.addr)
-  result.lpVtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}= 1
-  result.lpVtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}= 1
-  result.lpVtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT {.stdcall.} = 
+  result.lpVtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.} = 1
+  result.lpVtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.} = 1
+  result.lpVtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+      riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
     ppvObject[] = self
     discard self.lpVtbl.AddRef(self)
     return S_OK
-  wv.browser.controller = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).controller
-  wv.browser.view = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).view
+  echo "controllerCompletedHandler:", repr result
+  # wv.browser.controller = cast[ptr ControllerCompletedHandlerVTBL](
+  #     result.lpVtbl).controller
+  # wv.browser.view = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).view
 
 proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
-  result = cast[ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler](alloc0(sizeof(ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler)))
+  result = cast[ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler](
+      alloc0(sizeof(
+      ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler)))
+  var a = wv.controllerCompletedHandler()
+  echo repr a
   var vtbl = EnvironmentCompletedHandlerVTBL(
       handle: wv.window[].handle,
-      controllerCompletedHandler: wv.controllerCompletedHandler(),
-      Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-        discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(createdEnvironment,  cast[ptr EnvironmentCompletedHandlerVTBL](self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](self.lpVtbl).controllerCompletedHandler)
-        return 0
-        )
+      controllerCompletedHandler: a,
+      Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+          errorCode: HRESULT;
+          createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
+    discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
+        createdEnvironment, cast[ptr EnvironmentCompletedHandlerVTBL](
+        self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
+        self.lpVtbl).controllerCompletedHandler)
+    return 0
+    )
   result.lpVtbl = vtbl.addr
-  result.lpVtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}= 1
-  result.lpVtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}= 1
-  result.lpVtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT {.stdcall.} = 
+  result.lpVtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.} = 1
+  result.lpVtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.} = 1
+  result.lpVtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+      riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
     ppvObject[] = self
     discard self.lpVtbl.AddRef(self)
     return S_OK
+  echo repr cast[ptr EnvironmentCompletedHandlerVTBL]( result.lpVtbl).controllerCompletedHandler
 
 proc resize*(b: Browser) =
-  var bounds: RECT 
+  var bounds: RECT
   GetClientRect(b.hwnd, bounds)
-  discard b.controller.lpVtbl.PutBounds(b.controller,bounds)
+  discard b.controller.lpVtbl.PutBounds(b.controller, bounds)
 
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
-  var dataPath = getEnv("AppData") /  extractFilename(exePath)
-  # var versionInfo: LPWSTR 
-  # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
-  # CoTaskMemFree(versionInfo)
+  var dataPath = getEnv("AppData") / extractFilename(exePath)
+  var versionInfo: LPWSTR
+  GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
+  echo versionInfo
+  CoTaskMemFree(versionInfo)
+
   var h = wv.environmentCompletedHandler()
-  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, NULL, h)
+  let lib = loadLib loaderPath
+  let createCoreWebView2EnvironmentWithOptions = cast[
+      CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
+  echo repr h.lpVtbl
+  let r1 = createCoreWebView2EnvironmentWithOptions(NULL, dataPath, NULL, h)
   # let r1 = CreateCoreWebView2Environment(h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
-  while GetMessage(msg.addr, 0, 0, 0)<0:
+  while GetMessage(msg.addr, 0, 0, 0) < 0:
     break
   TranslateMessage(msg.addr)
   DispatchMessage(msg.addr)
   var settings: ICoreWebView2Settings
-  let r = b.view.lpVtbl.GetSettings(b.view[],settings.addr)
+  let r = b.view.lpVtbl.GetSettings(b.view[], settings.addr)
   doAssert r == S_OK, "failed to get webview settings"
-  
+
   b.settings = settings
 
 proc navigate*(b: Browser; url: string) =
@@ -94,7 +127,8 @@ proc navigate*(b: Browser; url: string) =
 
 
 proc AddScriptToExecuteOnDocumentCreated*(b: Browser; script: string) =
-  discard b.view.lpVtbl.AddScriptToExecuteOnDocumentCreated(b.view[],newWideCString(script), NUll)
+  discard b.view.lpVtbl.AddScriptToExecuteOnDocumentCreated(b.view[],
+      newWideCString(script), NUll)
 
 proc ExecuteScript*(b: Browser; script: string) =
   discard b.view.lpVtbl.ExecuteScript(b.view[], newWideCString(script), NUll)

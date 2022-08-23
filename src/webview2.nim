@@ -74,14 +74,14 @@ proc  webview_init*(w: Webview): cint =
     OleUninitialize()
     return -1
 
-  SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
+  # SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
   webviewContext.set(w.window.handle, w)
   # discard DisplayHTMLPage(w)
 
-  # SetWindowText(w.window.handle, w.window.config.title)
-  # ShowWindow(w.window.handle, SW_SHOWDEFAULT)
-  # UpdateWindow(w.window.handle)
-  # SetFocus(w.window.handle)
+  SetWindowText(w.window.handle, w.window.config.title)
+  ShowWindow(w.window.handle, SW_SHOWDEFAULT)
+  UpdateWindow(w.window.handle)
+  SetFocus(w.window.handle)
 
   return 0
 
