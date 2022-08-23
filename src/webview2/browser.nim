@@ -109,12 +109,8 @@ proc embed*(b: Browser; wv: WebView) =
   CoTaskMemFree(versionInfo)
 
   var h = wv.environmentCompletedHandler()
-  echo 233,repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).handle
-  echo 233,repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).AddRef
-  echo 233,repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).Release
-  echo 233,repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).QueryInterface
-  echo 233,repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).Invoke
-  echo 233,repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).controllerCompletedHandler
+  echo "handle",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).handle
+  echo "controllerCompletedHandler",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).controllerCompletedHandler
 
   # let lib = loadLib loaderPath
   # let createCoreWebView2EnvironmentWithOptions = cast[

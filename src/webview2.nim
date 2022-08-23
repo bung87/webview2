@@ -141,7 +141,7 @@ proc run*(w: Webview, quitProc: proc () {.noconv.}, controlCProc: proc () {.noco
 
 when isMainModule:
   var v = newWebView()
-  discard v.webview_init()
+  assert v.webview_init() == 0
   v.init
   
   v.run
