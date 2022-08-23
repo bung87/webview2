@@ -121,8 +121,8 @@ type
         coreWebView2: ptr ptr ICoreWebView2): HRESULT
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL *
-    = object {.pure, inheritable.}
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* {.pure, inheritable.}
+    = object 
     AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}
     Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT  {.stdcall.}
@@ -144,8 +144,8 @@ type
   ICoreWebView2ExecuteScriptCompletedHandlerVTBL * = object of IUnknownVtbl
     Invoke*: proc (self: ICoreWebView2ExecuteScriptCompletedHandler;
         errorCode: HRESULT; resultObjectAsJson: LPCWSTR) {.stdcall.}
-  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL *
-    = object {.pure, inheritable.}
+  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL*  {.pure, inheritable.}
+    = object
     AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}
     Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler):ULONG {.stdcall.}
     Invoke*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
