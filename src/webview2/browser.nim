@@ -115,8 +115,8 @@ proc embed*(b: Browser; wv: WebView) =
   # let lib = loadLib loaderPath
   # let createCoreWebView2EnvironmentWithOptions = cast[
   #     CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
-  
-  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, NULL, h)
+  var options=  ICoreWebView2EnvironmentOptions()
+  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, options.addr, h)
   # let r1 = CreateCoreWebView2Environment(h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
