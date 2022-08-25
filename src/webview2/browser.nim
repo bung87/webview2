@@ -26,7 +26,7 @@ type ControllerCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2C
   controller: ptr ICoreWebView2Controller
   view: ptr ICoreWebView2
 
-type EnvironmentCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
+type EnvironmentCompletedHandlerVTBL {.byref.} = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
   controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
   handle: HWND
 
@@ -56,6 +56,7 @@ proc controllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView
   vtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.} = 1
   vtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
       riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
+    echo "controllerCompletedHandler QueryInterface"
     ppvObject[] = self
     discard self.lpVtbl.AddRef(self)
     return S_OK
@@ -75,11 +76,11 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
       controllerCompletedHandler: wv.controllerCompletedHandler(),
       # Invoke: 
     )
-  echo "environmentCompletedHandler addr1:" ,  cast[int](result)
+  
   vtbl.Invoke = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    echo "invoke"
+    echo "EnvironmentCompletedHandlerVTBL Invoke"
     discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
         createdEnvironment, cast[ptr EnvironmentCompletedHandlerVTBL](
         self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
@@ -90,6 +91,7 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
   vtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
       riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
     var guid = DEFINE_GUID"4E8A3389-C9D8-4BD2-B6B5-124FEE6CC14D"
+    echo "EnvironmentCompletedHandlerVTBL QueryInterface"
     if IsEqualIID(riid, guid.addr):
       ppvObject[] = self
       discard self.lpVtbl.AddRef(self)
@@ -98,9 +100,9 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
       ppvObject[] = nil
       return E_NOINTERFACE
 
-  echo  "EnvironmentCompletedHandlerVTBL", repr vtbl
   result.lpVtbl = vtbl.addr
-  echo "environmentCompletedHandler result.lpVtbl 1:" ,  cast[int](result.lpVtbl)
+  echo "environmentCompletedHandler addr:" ,  cast[int](result)
+  echo "environmentCompletedHandler lpVtbl:" , repr result.lpVtbl
 
 proc resize*(b: Browser) =
   var bounds: RECT
@@ -116,7 +118,7 @@ proc embed*(b: Browser; wv: WebView) =
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
 
-  var h = wv.environmentCompletedHandler()
+  let h = wv.environmentCompletedHandler()
   echo "handle",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).handle
   # echo "controllerCompletedHandler",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).controllerCompletedHandler
 

@@ -138,13 +138,10 @@ proc CreateWebViewEnvironmentWithClientDll( lpLibFileName:PCWSTR;unknown: bool; 
   let canUnloadProc = GetProcAddress(clientDll, "DllCanUnloadNow")
   if createProc == nil:
     return HRESULT_FROM_WIN32(GetLastError())
-  echo repr userDataDir
-  echo repr environmentOptions
-  echo "envCompletedHandler:", repr envCompletedHandler
-  echo "environmentCompletedHandler addr:" ,  cast[int](envCompletedHandler)
-  echo "environmentCompletedHandler result.lpVtbl 2:" ,  cast[int](envCompletedHandler.lpVtbl)
-  echo repr createProc
-  echo repr unknown
+
+  echo "envCompletedHandler addr:" ,  cast[int](envCompletedHandler)
+  echo "envCompletedHandler lpVtbl:" , repr envCompletedHandler.lpVtbl
+
   # var environmentOptions = IUnknown()
   let hr = cast[CreateWebViewEnvironmentWithOptionsInternal](createProc)(unknown, runtimeType, userDataDir, environmentOptions, envCompletedHandler)
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
