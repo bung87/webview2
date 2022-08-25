@@ -119,10 +119,10 @@ type
     Close*: proc(self: ptr ICoreWebView2Controller): HRESULT
     GetCoreWebView2*: proc (self: ptr ICoreWebView2Controller;
         coreWebView2: ptr ptr ICoreWebView2): HRESULT
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure.} = object
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* {.pure, inheritable.}
-    = object 
+    = object
     AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}
     Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler):ULONG {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler; riid: REFIID, ppvObject: ptr pointer):HRESULT  {.stdcall.}

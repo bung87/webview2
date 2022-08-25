@@ -22,11 +22,11 @@ import loader
 #     environmentOptions: ptr ICoreWebView2EnvironmentOptions;
 #     environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT {.stdcall.}
 
-type ControllerCompletedHandlerVTBL = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
+type ControllerCompletedHandlerVTBL {.pure, inheritable.} = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
   controller: ptr ICoreWebView2Controller
   view: ptr ICoreWebView2
 
-type EnvironmentCompletedHandlerVTBL {.byref.} = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
+type EnvironmentCompletedHandlerVTBL {.pure, inheritable.} = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
   controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
   handle: HWND
 
@@ -102,7 +102,7 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
 
   result.lpVtbl = vtbl.addr
   echo "environmentCompletedHandler addr:" ,  cast[int](result)
-  echo "environmentCompletedHandler lpVtbl:" , repr result.lpVtbl
+  echo "environmentCompletedHandler lpVtbl:" , repr cast[ptr EnvironmentCompletedHandlerVTBL](result.lpVtbl)
 
 proc resize*(b: Browser) =
   var bounds: RECT
