@@ -2,19 +2,20 @@
 import winim
 import com
 import types
-import std/[os, atomics, dynlib]
-import memlib
+import std/[os, atomics]
+import loader
+# import memlib
 
-const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" /
-    "WebView2Loader.dll"
-const dll = staticReadDll(loaderPath)
-withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2Environment"}:
-  proc CreateCoreWebView2Environment(environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
-withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions"}:
-  proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
-withPragma {cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString"}:
-  proc GetAvailableCoreWebView2BrowserVersionString(
-    browserExecutableFolder: PCWSTR; versionInfo: ptr LPWSTR; )
+# const loaderPath = currentSourcePath().parentDir() / "webviewloader" / "x64" /
+#     "WebView2Loader.dll"
+# const dll = staticReadDll(loaderPath)
+# withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2Environment"}:
+#   proc CreateCoreWebView2Environment(environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
+# withPragma {cdecl, memlib: dll, importc: "CreateCoreWebView2EnvironmentWithOptions"}:
+#   proc CreateCoreWebView2EnvironmentWithOptions(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT
+# withPragma {cdecl, memlib: dll, importc: "GetAvailableCoreWebView2BrowserVersionString"}:
+#   proc GetAvailableCoreWebView2BrowserVersionString(
+#     browserExecutableFolder: PCWSTR; versionInfo: ptr LPWSTR; )
 
 # type CreateCoreWebView2EnvironmentWithOptions = proc(
 #     browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR;
@@ -72,7 +73,10 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
   var vtbl = EnvironmentCompletedHandlerVTBL(
       handle: wv.window[].handle,
       controllerCompletedHandler: wv.controllerCompletedHandler(),
-      Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+      # Invoke: 
+    )
+  echo "environmentCompletedHandler addr1:" ,  cast[int](result)
+  vtbl.Invoke = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
     echo "invoke"
@@ -81,18 +85,22 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
         self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
         self.lpVtbl).controllerCompletedHandler)
     return 0
-    )
-  
-  
   vtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.} = 1
   vtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.} = 1
   vtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
       riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
-    ppvObject[] = self
-    discard self.lpVtbl.AddRef(self)
-    return S_OK
+    var guid = DEFINE_GUID"4E8A3389-C9D8-4BD2-B6B5-124FEE6CC14D"
+    if IsEqualIID(riid, guid.addr):
+      ppvObject[] = self
+      discard self.lpVtbl.AddRef(self)
+      return S_OK
+    else:
+      ppvObject[] = nil
+      return E_NOINTERFACE
+
   echo  "EnvironmentCompletedHandlerVTBL", repr vtbl
   result.lpVtbl = vtbl.addr
+  echo "environmentCompletedHandler result.lpVtbl 1:" ,  cast[int](result.lpVtbl)
 
 proc resize*(b: Browser) =
   var bounds: RECT
@@ -103,20 +111,19 @@ proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
   var dataPath = getEnv("AppData") / extractFilename(exePath)
-  var versionInfo: LPWSTR
-  GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
-  echo versionInfo
-  CoTaskMemFree(versionInfo)
+  # var versionInfo: LPWSTR
+  # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
+  # echo versionInfo
+  # CoTaskMemFree(versionInfo)
 
   var h = wv.environmentCompletedHandler()
   echo "handle",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).handle
-  echo "controllerCompletedHandler",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).controllerCompletedHandler
+  # echo "controllerCompletedHandler",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).controllerCompletedHandler
 
   # let lib = loadLib loaderPath
   # let createCoreWebView2EnvironmentWithOptions = cast[
   #     CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
-  var options=  ICoreWebView2EnvironmentOptions()
-  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, options.addr, h)
+  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, nil, h)
   # let r1 = CreateCoreWebView2Environment(h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
