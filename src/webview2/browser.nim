@@ -61,7 +61,6 @@ proc controllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView
     discard self.lpVtbl.AddRef(self)
     return S_OK
   result.lpVtbl = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL](vtbl.addr)
-  echo "controllerCompletedHandler ", repr result.lpVtbl
   # wv.browser.controller = cast[ptr ControllerCompletedHandlerVTBL](
   #     result.lpVtbl).controller
   # wv.browser.view = cast[ptr ControllerCompletedHandlerVTBL](result.lpVtbl).view
@@ -101,8 +100,6 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
       return E_NOINTERFACE
 
   result.lpVtbl = vtbl.addr
-  echo "environmentCompletedHandler addr:" ,  cast[int](result)
-  echo "environmentCompletedHandler lpVtbl:" , repr cast[ptr EnvironmentCompletedHandlerVTBL](result.lpVtbl)
 
 proc resize*(b: Browser) =
   var bounds: RECT
@@ -112,20 +109,28 @@ proc resize*(b: Browser) =
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
   let exePath = getAppFilename()
-  var dataPath = getEnv("AppData") / extractFilename(exePath)
+  var (dir, name, ext) = splitFile(exePath)
+  var dataPath = getEnv("AppData") / name
+  createDir(dataPath)
+
   # var versionInfo: LPWSTR
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
 
   let h = wv.environmentCompletedHandler()
-  echo "handle",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).handle
-  # echo "controllerCompletedHandler",repr cast[ptr EnvironmentCompletedHandlerVTBL](h.lpVtbl).controllerCompletedHandler
 
   # let lib = loadLib loaderPath
   # let createCoreWebView2EnvironmentWithOptions = cast[
   #     CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
-  let r1 = CreateCoreWebView2EnvironmentWithOptions(NULL, dataPath, nil, h)
+  # var options = ICoreWebView2EnvironmentOptions()
+  var options = cast[ptr ICoreWebView2EnvironmentOptions](
+      alloc0(sizeof(
+      ICoreWebView2EnvironmentOptions)))
+  var vtbl = ICoreWebView2EnvironmentOptionsVTBL(TargetCompatibleBrowserVersion: "104.0.1293.63")
+  options.lpVtbl = vtbl.addr
+
+  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, h)
   # let r1 = CreateCoreWebView2Environment(h)
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG

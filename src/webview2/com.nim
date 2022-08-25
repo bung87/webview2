@@ -3,10 +3,12 @@ import winim
 
 type
   ICoreWebView2EnvironmentOptions* {.pure.} = object
-    AdditionalBrowserArguments: LPWSTR
-    AllowSingleSignOnUsingOSPrimaryAccount: BOOL
-    Language: LPWSTR
-    TargetCompatibleBrowserVersion: LPCWSTR
+    lpVtbl*: ptr ICoreWebView2EnvironmentOptionsVTBL
+  ICoreWebView2EnvironmentOptionsVTBL* = object
+    AdditionalBrowserArguments*: LPWSTR
+    AllowSingleSignOnUsingOSPrimaryAccount*: BOOL
+    Language*: LPWSTR
+    TargetCompatibleBrowserVersion*: LPCWSTR
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
   ICoreWebView2VTBL* = object of IUnknownVtbl

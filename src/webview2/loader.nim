@@ -101,15 +101,14 @@ proc FindInstalledClientDllForChannel(lpSubKey:string; system:bool;  clientPath:
   var phkResult: HKEY 
   var cbPath:int32 = MAX_PATH
   
-  let size = 256
   when useWinUnicode:
     var buffer: WideCString
-    unsafeNew(buffer, size + sizeof(Utf16Char))
-    buffer[size div sizeof(Utf16Char) - 1] = Utf16Char(0)
+    unsafeNew(buffer, cbPath + sizeof(Utf16Char))
+    buffer[cbPath div sizeof(Utf16Char) - 1] = Utf16Char(0)
   else:
     var buffer: CString
-    unsafeNew(buffer, size + 1)
-    buffer[size - 1] = 0
+    unsafeNew(buffer, cbPath + 1)
+    buffer[cbPath - 1] = 0
 
   if RegOpenKeyExW(if system:  HKEY_LOCAL_MACHINE else: HKEY_CURRENT_USER, lpSubKey,
                     0, KEY_READ or KEY_WOW64_32KEY, &phkResult) != ERROR_SUCCESS:
@@ -130,20 +129,21 @@ proc FindInstalledClientDllForChannel(lpSubKey:string; system:bool;  clientPath:
 type CreateWebViewEnvironmentWithOptionsInternal = proc (unknown: bool; runtimeType: WebView2RunTimeType; userDataDir:PCWSTR; environmentOptions: ptr IUnknown; envCompletedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT{.stdcall.}
 type DllCanUnloadNow = proc ():HRESULT {.stdcall.}
 
-proc CreateWebViewEnvironmentWithClientDll( lpLibFileName:PCWSTR;unknown: bool; runtimeType: WebView2RunTimeType; userDataDir:PCWSTR; environmentOptions: ptr IUnknown; envCompletedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ):HRESULT =
-  let clientDll = LoadLibraryW(lpLibFileName)
+proc CreateWebViewEnvironmentWithClientDll( lpLibFileName:string;unknown: bool; runtimeType: WebView2RunTimeType; userDataDir:string; environmentOptions: ptr IUnknown; envCompletedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ):HRESULT =
+  let clientDll = LoadLibrary(lpLibFileName)
+
   if clientDll == 0:
      return HRESULT_FROM_WIN32(GetLastError())
-  let createProc = GetProcAddress(clientDll, "CreateWebViewEnvironmentWithOptionsInternal")
+  let createProcAddr = GetProcAddress(clientDll, "CreateWebViewEnvironmentWithOptionsInternal")
   let canUnloadProc = GetProcAddress(clientDll, "DllCanUnloadNow")
-  if createProc == nil:
+  if createProcAddr == nil:
     return HRESULT_FROM_WIN32(GetLastError())
 
-  echo "envCompletedHandler addr:" ,  cast[int](envCompletedHandler)
-  echo "envCompletedHandler lpVtbl:" , repr envCompletedHandler.lpVtbl
+  # var environmentOptions = IUnknown() 
+  let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
 
-  # var environmentOptions = IUnknown()
-  let hr = cast[CreateWebViewEnvironmentWithOptionsInternal](createProc)(unknown, runtimeType, userDataDir, environmentOptions, envCompletedHandler)
+  let hr = createProc(unknown, runtimeType, userDataDir, environmentOptions, envCompletedHandler)
+
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
   return hr
@@ -194,15 +194,15 @@ proc FindInstalledClientDll(clientPath: var string; preference: WebView2ReleaseC
   channelStr = kChannelName[channel]
   return 0
 
-proc CreateCoreWebView2EnvironmentWithOptions*(browserExecutableFolder: PCWSTR; userDataFolder: PCWSTR; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT =
+proc CreateCoreWebView2EnvironmentWithOptions*(browserExecutableFolder: string; userDataFolder: string; environmentOptions: ptr ICoreWebView2EnvironmentOptions; environmentCreatedHandler:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler ): HRESULT =
   var clientPath: string
   var channelStr: string 
-  if browserExecutableFolder == nil:
+  if browserExecutableFolder == "":
     doAssert FindInstalledClientDll(clientPath, WebView2ReleaseChannelPreference.kStable, channelStr) == 0
   else:
     clientPath = $browserExecutableFolder
-  echo "CreateCoreWebView2EnvironmentWithOptions:",cast[int](environmentCreatedHandler)
-  return CreateWebViewEnvironmentWithClientDll(clientPath, true, WebView2RunTimeType.kInstalled, userDataFolder, nil, environmentCreatedHandler)
+
+  return CreateWebViewEnvironmentWithClientDll(clientPath, true, WebView2RunTimeType.kInstalled, userDataFolder, cast[ ptr IUnknown](environmentOptions), environmentCreatedHandler)
 
 when isMainModule:
   var clientPath: string
