@@ -8,7 +8,7 @@ type
     AdditionalBrowserArguments*: LPWSTR
     AllowSingleSignOnUsingOSPrimaryAccount*: BOOL
     Language*: LPWSTR
-    TargetCompatibleBrowserVersion*: LPCWSTR
+    TargetCompatibleBrowserVersion*: LPWSTR 
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
   ICoreWebView2VTBL* = object of IUnknownVtbl

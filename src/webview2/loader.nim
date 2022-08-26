@@ -152,9 +152,9 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
 
   # var environmentOptions = IUnknown()
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
-  # var path  = newString(MAX_PATH)
-  # copyMem(path.addr, userDataDir.unSafeAddr, userDataDir.len)
-  
+  # var path  = newString(MAX_PATH + 2)
+  # copyMem(path[0].addr, userDataDir[0].unSafeAddr, userDataDir.len)
+
   let hr = createProc(unknown, runtimeType, userDataDir, environmentOptions, envCompletedHandler)
 
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
@@ -217,10 +217,10 @@ proc CreateCoreWebView2EnvironmentWithOptions*(browserExecutableFolder: string;
   var channelStr: string
   if browserExecutableFolder == "":
     doAssert FindInstalledClientDll(clientPath,
-        WebView2ReleaseChannelPreference.kStable, channelStr) == 0
+        WebView2ReleaseChannelPreference.kCanary, channelStr) == 0
   else:
     clientPath = $browserExecutableFolder
-
+  echo clientPath
   return CreateWebViewEnvironmentWithClientDll(clientPath, true,
       WebView2RunTimeType.kInstalled, userDataFolder, cast[ptr IUnknown](
       environmentOptions), environmentCreatedHandler)
@@ -320,7 +320,7 @@ when isMainModule:
   var clientPath: string
   var channelStr: string
   echo FindInstalledClientDll(clientPath,
-      WebView2ReleaseChannelPreference.kStable, channelStr)
+      WebView2ReleaseChannelPreference.kCanary, channelStr)
   echo "clientPath:", clientPath
   echo "channelStr:", repr channelStr
   SetCurrentProcessExplicitAppUserModelID("webview2")
