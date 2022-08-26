@@ -152,7 +152,9 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
 
   # var environmentOptions = IUnknown()
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
-
+  # var path  = newString(MAX_PATH)
+  # copyMem(path.addr, userDataDir.unSafeAddr, userDataDir.len)
+  
   let hr = createProc(unknown, runtimeType, userDataDir, environmentOptions, envCompletedHandler)
 
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
