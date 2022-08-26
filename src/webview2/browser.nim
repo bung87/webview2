@@ -112,7 +112,6 @@ proc embed*(b: Browser; wv: WebView) =
   var (dir, name, ext) = splitFile(exePath)
   var dataPath = getEnv("AppData") / name
   createDir(dataPath)
-  echo dataPath
   # var versionInfo: LPWSTR
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo
@@ -124,13 +123,13 @@ proc embed*(b: Browser; wv: WebView) =
   # let createCoreWebView2EnvironmentWithOptions = cast[
   #     CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
   # var options = ICoreWebView2EnvironmentOptions()
-  var options = cast[ptr ICoreWebView2EnvironmentOptions](
-      alloc0(sizeof(
-      ICoreWebView2EnvironmentOptions)))
-  var vtbl = ICoreWebView2EnvironmentOptionsVTBL(TargetCompatibleBrowserVersion: "104.0.1293.70")
-  options.lpVtbl = vtbl.addr
+  # var options = cast[ptr ICoreWebView2EnvironmentOptions](
+  #     alloc0(sizeof(
+  #     ICoreWebView2EnvironmentOptions)))
+  # var vtbl = ICoreWebView2EnvironmentOptionsVTBL(TargetCompatibleBrowserVersion: "104.0.1293.70")
+  # options.lpVtbl = vtbl.addr
 
-  let r1 = CreateCoreWebView2EnvironmentWithOptions("", "", options, h)
+  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, nil, h)
   let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
   # let r1 = CreateCoreWebView2EnvironmentWithOptions(folder, dataPath, options, h)
   # let r1 = CreateCoreWebView2Environment(h)
