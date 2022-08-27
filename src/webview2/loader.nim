@@ -156,9 +156,7 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
 
   var path = L(userDataDir)
-
-  # copyMem(&path, userDataDir[0].unSafeAddr, userDataDir.len)
-  # path.setLen(MAX_PATH + 2)
+  path.setLen(MAX_PATH div 2)
   echo repr cast[seq[char]](path)
 
   # echo repr path
