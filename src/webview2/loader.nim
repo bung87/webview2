@@ -162,7 +162,7 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   echo repr cast[seq[char]](path)
 
   # echo repr path
-  let hr = createProc(unknown, runtimeType, nil, environmentOptions, envCompletedHandler)
+  let hr = createProc(unknown, runtimeType, &path, environmentOptions, envCompletedHandler)
 
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
