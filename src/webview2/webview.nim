@@ -1,10 +1,7 @@
 import window, browser
 import std/[os]
-
 import types,com
 import winim
-
-type PCWSTR* = WideCString
 
 
 proc newWebView*():WebView =

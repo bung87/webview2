@@ -142,8 +142,9 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
     runtimeType: WebView2RunTimeType; userDataDir: string;
     environmentOptions: ptr IUnknown;
     envCompletedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT =
-  let clientDll = LoadLibrary(lpLibFileName)
 
+  let clientDll = LoadLibrary(lpLibFileName)
+  # echo repr cast[seq[char]](L(lpLibFileName))
   if clientDll == 0:
     return HRESULT_FROM_WIN32(GetLastError())
   let createProcAddr = GetProcAddress(clientDll, "CreateWebViewEnvironmentWithOptionsInternal")
@@ -153,14 +154,15 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
 
   # var environmentOptions = IUnknown()
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
-  # var path  = newString(MAX_PATH + 2)
-  # var d = encode.toUTF16BE(userDataDir)
-  # var path = newString(MAX_PATH + 1)
 
-  # copyMem(path[0].addr, d[0].addr, d.len)
+  var path = L(userDataDir)
+
+  # copyMem(&path, userDataDir[0].unSafeAddr, userDataDir.len)
+  # path.setLen(MAX_PATH + 2)
+  echo repr cast[seq[char]](path)
 
   # echo repr path
-  let hr = createProc(unknown, runtimeType, userDataDir, environmentOptions, envCompletedHandler)
+  let hr = createProc(unknown, runtimeType, nil, environmentOptions, envCompletedHandler)
 
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
@@ -326,9 +328,10 @@ when isMainModule:
   var channelStr: string
   echo FindInstalledClientDll(clientPath,
       WebView2ReleaseChannelPreference.kCanary, channelStr)
-  echo "clientPath:", clientPath
+  let clientDll = LoadLibrary(clientPath)
+  echo "clientPath:", repr cast[seq[uint8]](clientPath)
   echo "channelStr:", repr channelStr
-  SetCurrentProcessExplicitAppUserModelID("webview2")
+  # SetCurrentProcessExplicitAppUserModelID("webview2")
   var appId: PWSTR
   echo GetAppUserModelIdForCurrentProcess(appId)
   echo appId

@@ -123,10 +123,16 @@ proc embed*(b: Browser; wv: WebView) =
   # let createCoreWebView2EnvironmentWithOptions = cast[
   #     CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
   # var options = ICoreWebView2EnvironmentOptions()
+
   var options = cast[ptr ICoreWebView2EnvironmentOptions](
       alloc0(sizeof(
       ICoreWebView2EnvironmentOptions)))
-  var vtbl = ICoreWebView2EnvironmentOptionsVTBL(TargetCompatibleBrowserVersion:"104.0.1293.70")
+  var vtbl = ICoreWebView2EnvironmentOptionsVTBL(
+    TargetCompatibleBrowserVersion:"104.0.1293.70-canary",
+    AdditionalBrowserArguments:"",
+    Language:"",
+    AllowSingleSignOnUsingOSPrimaryAccount:true
+    )
   options.lpVtbl = vtbl.addr
 
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, h)

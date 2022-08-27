@@ -140,7 +140,7 @@ proc run*(w: Webview, quitProc: proc () {.noconv.}, controlCProc: proc () {.noco
   #   w.webview_exit()
 
 when isMainModule:
-  SetCurrentProcessExplicitAppUserModelID("webview2")
+  # SetCurrentProcessExplicitAppUserModelID("webview2")
   var v = newWebView()
   assert v.webview_init() == 0
   v.init
