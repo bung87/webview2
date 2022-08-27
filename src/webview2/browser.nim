@@ -129,7 +129,7 @@ proc embed*(b: Browser; wv: WebView) =
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL(TargetCompatibleBrowserVersion:"104.0.1293.70")
   options.lpVtbl = vtbl.addr
 
-  let r1 = CreateCoreWebView2EnvironmentWithOptions("", "", options, h)
+  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, h)
   let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
   # let r1 = CreateCoreWebView2EnvironmentWithOptions(folder, dataPath, options, h)
   # let r1 = CreateCoreWebView2Environment(h)
