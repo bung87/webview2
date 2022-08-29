@@ -143,6 +143,7 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
     envCompletedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT =
 
   let clientDll = LoadLibrary(lpLibFileName)
+
   # echo repr cast[seq[char]](L(lpLibFileName))
   if clientDll == 0:
     return HRESULT_FROM_WIN32(GetLastError())
@@ -156,13 +157,12 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
 
   var path = L(userDataDir)
 
-  # var bstr = SysAllocString(&path)
+  # var bstr = SysAllocStringByteLen(cast[LPCSTR](&path), MAX_PATH)
   # # # echo repr cast[seq[char]](path)
   # defer:
   #   SysFreeString(bstr)
   # echo repr path
   let hr = createProc(unknown, runtimeType, cast[PCWSTR](&path), environmentOptions, envCompletedHandler)
-
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
   return hr
