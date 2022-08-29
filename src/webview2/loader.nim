@@ -155,14 +155,13 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
 
   var path = L(userDataDir)
-  # path.setLen(1000)
-  # path.nullTerminate
+
   # var bstr = SysAllocString(&path)
   # # # echo repr cast[seq[char]](path)
   # defer:
   #   SysFreeString(bstr)
   # echo repr path
-  let hr = createProc(unknown, runtimeType, cast[PCWSTR](&path), nil, envCompletedHandler)
+  let hr = createProc(unknown, runtimeType, cast[PCWSTR](&path), environmentOptions, envCompletedHandler)
 
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)

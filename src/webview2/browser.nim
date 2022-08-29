@@ -128,11 +128,34 @@ proc embed*(b: Browser; wv: WebView) =
       alloc0(sizeof(
       ICoreWebView2EnvironmentOptions)))
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL(
-    TargetCompatibleBrowserVersion:"104.0.1293.70-canary",
+    TargetCompatibleBrowserVersion:"104.0.1293.70",
     AdditionalBrowserArguments:"",
     Language:"",
-    AllowSingleSignOnUsingOSPrimaryAccount:true
+    AllowSingleSignOnUsingOSPrimaryAccount:false
     )
+  vtbl.get_AdditionalBrowserArguments = proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
+    value[] = self.lpVtbl.AdditionalBrowserArguments
+    return S_OK
+  vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = proc(self: ptr ICoreWebView2EnvironmentOptions;allow: ptr BOOL): HRESULT {.stdcall.} =
+    allow[] = self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount
+    return S_OK
+  vtbl.get_Language= proc(self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
+    value[] = self.lpVtbl.Language
+    return S_OK
+  vtbl.get_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value: ptr LPWSTR ): HRESULT {.stdcall.} =
+    value[] = self.lpVtbl.TargetCompatibleBrowserVersion
+    return S_OK
+  vtbl.put_AdditionalBrowserArguments = proc (self: ptr ICoreWebView2EnvironmentOptions;value:LPCWSTR ): HRESULT {.stdcall.} =
+    self.lpVtbl.AdditionalBrowserArguments = value
+    return S_OK
+  vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = proc (self: ptr ICoreWebView2EnvironmentOptions;allow: BOOL ): HRESULT {.stdcall.} =
+    self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount = allow
+    return S_OK
+  vtbl.put_Language = proc (self: ptr ICoreWebView2EnvironmentOptions;value:LPCWSTR ): HRESULT {.stdcall.} =
+    self.lpVtbl.Language = value
+  vtbl.put_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value:LPCWSTR ): HRESULT {.stdcall.} =
+    self.lpVtbl.TargetCompatibleBrowserVersion = value
+    return S_OK
   options.lpVtbl = vtbl.addr
 
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, h)
