@@ -2,7 +2,6 @@ import winim
 import com
 import std/[os, strscans]
 from winlean import useWinUnicode
-import encode
 
 type PACKAGE_VERSION {.pure.} = object
   # Version:UINT64
@@ -156,11 +155,14 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
 
   var path = L(userDataDir)
-  path.setLen(MAX_PATH div 2)
-  echo repr cast[seq[char]](path)
-
+  # path.setLen(1000)
+  # path.nullTerminate
+  # var bstr = SysAllocString(&path)
+  # # # echo repr cast[seq[char]](path)
+  # defer:
+  #   SysFreeString(bstr)
   # echo repr path
-  let hr = createProc(unknown, runtimeType, &path, environmentOptions, envCompletedHandler)
+  let hr = createProc(unknown, runtimeType, cast[PCWSTR](&path), nil, envCompletedHandler)
 
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)

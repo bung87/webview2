@@ -4,7 +4,7 @@ import winim
 type
   ICoreWebView2EnvironmentOptions* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentOptionsVTBL
-  ICoreWebView2EnvironmentOptionsVTBL* = object
+  ICoreWebView2EnvironmentOptionsVTBL* = object of IUnknownVtbl
     AdditionalBrowserArguments*: LPWSTR
     AllowSingleSignOnUsingOSPrimaryAccount*: BOOL
     Language*: LPWSTR
