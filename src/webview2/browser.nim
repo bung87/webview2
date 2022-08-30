@@ -111,7 +111,7 @@ proc embed*(b: Browser; wv: WebView) =
   let exePath = getAppFilename()
   var (dir, name, ext) = splitFile(exePath)
   var dataPath = getEnv("AppData") / name
-  createDir(dataPath)
+  # createDir(dataPath)
   # var versionInfo: LPWSTR
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo
@@ -155,6 +155,12 @@ proc embed*(b: Browser; wv: WebView) =
     self.lpVtbl.Language = value
   vtbl.put_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value:LPCWSTR ): HRESULT {.stdcall.} =
     self.lpVtbl.TargetCompatibleBrowserVersion = value
+    return S_OK
+  vtbl.get_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value:ptr BOOL):HRESULT {.stdcall.} =
+    value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
+    return S_OK
+  vtbl.put_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL):HRESULT {.stdcall.} =
+    self.lpVtbl.ExclusiveUserDataFolderAccess = value
     return S_OK
   options.lpVtbl = vtbl.addr
 

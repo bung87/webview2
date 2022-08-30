@@ -9,6 +9,7 @@ type
     AllowSingleSignOnUsingOSPrimaryAccount * : BOOL
     Language*: LPWSTR
     TargetCompatibleBrowserVersion*: LPWSTR
+    ExclusiveUserDataFolderAccess *: BOOL
     get_AdditionalBrowserArguments*: proc (
         self: ptr ICoreWebView2EnvironmentOptions;
         value: ptr LPWSTR): HRESULT {.stdcall.}
@@ -31,7 +32,9 @@ type
     put_TargetCompatibleBrowserVersion * : proc (
         self: ptr ICoreWebView2EnvironmentOptions;
         value: LPCWSTR): HRESULT {.stdcall.}
-
+    # ICoreWebView2EnvironmentOptions2
+    get_ExclusiveUserDataFolderAccess*:proc (self: ptr ICoreWebView2EnvironmentOptions;value:ptr BOOL):HRESULT {.stdcall.}
+    put_ExclusiveUserDataFolderAccess*:proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL):HRESULT {.stdcall.}
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
   ICoreWebView2VTBL* = object of IUnknownVtbl
@@ -179,7 +182,7 @@ type
         errorCode: HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
-  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvok * = proc (
+  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvoke * = proc (
       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
       p: HRESULT; createdController: ptr ICoreWebView2Controller)
   ICoreWebView2SettingsVTBL* = object of IUnknownVtbl

@@ -8,8 +8,8 @@ type
     store: Table[HWND, WebView]
   WebviewContextStore = ref WebviewContextStoreObj
 
-var webviewContext* = new WebviewContextStore
-webviewContext.mu.initLock()
+# var webviewContext* = new WebviewContextStore
+# webviewContext.mu.initLock()
 
 proc set*(wcs: WebviewContextStore; hwnd: HWND;wv: WebView) = 
   wcs.mu.acquire

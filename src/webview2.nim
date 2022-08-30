@@ -75,7 +75,7 @@ proc  webview_init*(w: Webview): cint =
     return -1
 
   # SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
-  webviewContext.set(w.window.handle, w)
+  # webviewContext.set(w.window.handle, w)
   # discard DisplayHTMLPage(w)
 
   SetWindowText(w.window.handle, w.window.config.title)
@@ -140,7 +140,7 @@ proc run*(w: Webview, quitProc: proc () {.noconv.}, controlCProc: proc () {.noco
   #   w.webview_exit()
 
 when isMainModule:
-  # SetCurrentProcessExplicitAppUserModelID("webview2")
+  SetCurrentProcessExplicitAppUserModelID("webview2 app")
   var v = newWebView()
   assert v.webview_init() == 0
   v.init
