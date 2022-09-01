@@ -112,6 +112,8 @@ type
         version_info: LPWSTR): HRESULT
     AddNewBrowserVersionAvailable*: HRESULT
     RemoveNewBrowserVersionAvailable*: HRESULT
+    # ICoreWebView2Environment7
+    get_UserDataFolder*: proc (self: ptr ICoreWebView2Environment;value: ptr LPWSTR): HRESULT 
   ICoreWebView2Controller* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2ControllerVTBL
   ICoreWebView2ControllerVTBL* = object of IUnknownVtbl

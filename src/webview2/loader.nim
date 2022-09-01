@@ -156,7 +156,7 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   let createProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
 
   var path = L(userDataDir)
-
+  echo repr path
   # var bstr = SysAllocStringByteLen(cast[LPCSTR](&path), MAX_PATH)
   # # # echo repr cast[seq[char]](path)
   # defer:
