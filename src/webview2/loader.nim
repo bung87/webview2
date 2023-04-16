@@ -159,7 +159,7 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   # defer:
   #   SysFreeString(bstr)
   # echo repr path
-  let hr = createWebViewEnvironmentWithOptionsInternalProc(unknown, runtimeType, cast[PCWSTR](&path), environmentOptions, envCompletedHandler)
+  let hr = createWebViewEnvironmentWithOptionsInternalProc(true, runtimeType, cast[PCWSTR](&path), environmentOptions, envCompletedHandler)
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
   return hr

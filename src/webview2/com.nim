@@ -41,8 +41,8 @@ type
     GetSettings*: proc (self: ptr ICoreWebView2;
         settings: ptr ICoreWebView2Settings): HRESULT
     GetSource*: HRESULT
-    Navigate*: proc(self: ptr ICoreWebView2; url: LPCWSTR): HRESULT
-    NavigateToString*: proc(self: ptr ICoreWebView2;
+    Navigate*: proc (self: ptr ICoreWebView2; url: LPCWSTR): HRESULT
+    NavigateToString*: proc (self: ptr ICoreWebView2;
         html_content: LPCWSTR): HRESULT
     AddNavigationStarting*: HRESULT
     RemoveNavigationStarting*: HRESULT
@@ -64,14 +64,14 @@ type
     RemovePermissionRequested*: HRESULT
     AddProcessFailed*: HRESULT
     RemoveProcessFailed*: HRESULT
-    AddScriptToExecuteOnDocumentCreated * : proc(self: ICoreWebView2;
+    AddScriptToExecuteOnDocumentCreated * : proc (self: ICoreWebView2;
         javaScript: LPCWSTR;
         handler: ptr ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler): HRESULT
     RemoveScriptToExecuteOnDocumentCreated * : HRESULT
-    ExecuteScript*: proc(self: ptr ICoreWebView2; javaScript: LPCWSTR;
+    ExecuteScript*: proc (self: ptr ICoreWebView2; javaScript: LPCWSTR;
         handler: ptr ICoreWebView2ExecuteScriptCompletedHandler): HRESULT
     CapturePreview*: HRESULT
-    Reload*: proc(self: ptr ICoreWebView2): HRESULT
+    Reload*: proc (self: ptr ICoreWebView2): HRESULT
     PostWebMessageAsJSON*: HRESULT
     PostWebMessageAsString*: HRESULT
     AddWebMessageReceived*: HRESULT
@@ -80,18 +80,18 @@ type
     GetBrowserProcessID*: HRESULT
     GetCanGoBack*: HRESULT
     GetCanGoForward*: HRESULT
-    GoBack*: proc(self: ptr ICoreWebView2): HRESULT
-    GoForward*: proc(self: ptr ICoreWebView2): HRESULT
+    GoBack*: proc (self: ptr ICoreWebView2): HRESULT
+    GoForward*: proc (self: ptr ICoreWebView2): HRESULT
     GetDevToolsProtocolEventReceiver*: HRESULT
-    Stop*: proc(self: ptr ICoreWebView2): HRESULT
+    Stop*: proc (self: ptr ICoreWebView2): HRESULT
     AddNewWindowRequested*: HRESULT
     RemoveNewWindowRequested*: HRESULT
     AddDocumentTitleChanged*: HRESULT
     RemoveDocumentTitleChanged*: HRESULT
-    GetDocumentTitle*: proc(self: ptr ICoreWebView2; title: LPWSTR): HRESULT
+    GetDocumentTitle*: proc (self: ptr ICoreWebView2; title: LPWSTR): HRESULT
     AddHostObjectToScript*: HRESULT
     RemoveHostObjectFromScript*: HRESULT
-    OpenDevToolsWindow*: proc(self: ptr ICoreWebView2): HRESULT
+    OpenDevToolsWindow*: proc (self: ptr ICoreWebView2): HRESULT
     AddContainsFullScreenElementChanged * : HRESULT
     RemoveContainsFullScreenElementChanged * : HRESULT
     GetContainsFullScreenElement*: HRESULT
@@ -104,11 +104,11 @@ type
   ICoreWebView2Environment* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentVTBL
   ICoreWebView2EnvironmentVTBL* = object of IUnknownVtbl
-    CreateCoreWebView2Controller*: proc(self: ptr ICoreWebView2Environment;
+    CreateCoreWebView2Controller*: proc (self: ptr ICoreWebView2Environment;
         parentWindow: HWND;
         handler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): HRESULT
     CreateWebResourceResponse*: HRESULT
-    GetBrowserVersionString*: proc(self: ptr ICoreWebView2Environment;
+    GetBrowserVersionString*: proc (self: ptr ICoreWebView2Environment;
         version_info: LPWSTR): HRESULT
     AddNewBrowserVersionAvailable*: HRESULT
     RemoveNewBrowserVersionAvailable*: HRESULT
@@ -117,16 +117,16 @@ type
   ICoreWebView2Controller* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2ControllerVTBL
   ICoreWebView2ControllerVTBL* = object of IUnknownVtbl
-    GetIsVisible*: proc(self: ptr ICoreWebView2Controller;
+    GetIsVisible*: proc (self: ptr ICoreWebView2Controller;
         is_visible: ptr bool): HRESULT
-    PutIsVisible*: proc(self: ptr ICoreWebView2Controller;
+    PutIsVisible*: proc (self: ptr ICoreWebView2Controller;
         is_visible: bool): HRESULT
-    GetBounds*: proc(self: ptr ICoreWebView2Controller;
+    GetBounds*: proc (self: ptr ICoreWebView2Controller;
         bounds: ptr RECT): HRESULT
-    PutBounds*: proc(self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT
-    GetZoomFactor*: proc(self: ptr ICoreWebView2Controller;
+    PutBounds*: proc (self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT
+    GetZoomFactor*: proc (self: ptr ICoreWebView2Controller;
         factor: ptr float64): HRESULT
-    PutZoomFactor*: proc(self: ptr ICoreWebView2Controller;
+    PutZoomFactor*: proc (self: ptr ICoreWebView2Controller;
         factor: float64): HRESULT
     AddZoomFactorChanged*: HRESULT
     RemoveZoomFactorChanged*: HRESULT
@@ -140,13 +140,13 @@ type
     RemoveLostFocus*: HRESULT
     AddAcceleratorKeyPressed*: HRESULT
     RemoveAcceleratorKeyPressed*: HRESULT
-    GetParentWindow*: proc(self: ptr ICoreWebView2Controller;
+    GetParentWindow*: proc (self: ptr ICoreWebView2Controller;
         parent: ptr HWND): HRESULT
-    PutParentWindow*: proc(self: ptr ICoreWebView2Controller;
+    PutParentWindow*: proc (self: ptr ICoreWebView2Controller;
         parent: HWND): HRESULT
-    NotifyParentWindowPositionChanged*: proc(
+    NotifyParentWindowPositionChanged*: proc (
         self: ptr ICoreWebView2Controller): HRESULT
-    Close*: proc(self: ptr ICoreWebView2Controller): HRESULT
+    Close*: proc (self: ptr ICoreWebView2Controller): HRESULT
     GetCoreWebView2*: proc (self: ptr ICoreWebView2Controller;
         coreWebView2: ptr ptr ICoreWebView2): HRESULT
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure,
@@ -154,8 +154,8 @@ type
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL * {.pure, inheritable.}
     = object
-    AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
-    Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
+    AddRef*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
+    Release*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
     Invoke*: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke
@@ -178,9 +178,9 @@ type
         errorCode: HRESULT; resultObjectAsJson: LPCWSTR) {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL * {.pure, inheritable.}
     = object
-    AddRef*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.}
-    Release*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.}
-    Invoke*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+    AddRef*: proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.}
+    Release*: proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.}
+    Invoke*: proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
         errorCode: HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
