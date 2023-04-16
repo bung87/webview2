@@ -139,7 +139,7 @@ proc embed*(b: Browser; wv: WebView) =
   vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = proc(self: ptr ICoreWebView2EnvironmentOptions;allow: ptr BOOL): HRESULT {.stdcall.} =
     allow[] = self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount
     return S_OK
-  vtbl.get_Language= proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
+  vtbl.get_Language = proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
     value[] = self.lpVtbl.Language
     return S_OK
   vtbl.get_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value: ptr LPWSTR ): HRESULT {.stdcall.} =
@@ -156,10 +156,10 @@ proc embed*(b: Browser; wv: WebView) =
   vtbl.put_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value:LPCWSTR ): HRESULT {.stdcall.} =
     self.lpVtbl.TargetCompatibleBrowserVersion = value
     return S_OK
-  vtbl.get_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value:ptr BOOL):HRESULT {.stdcall.} =
+  vtbl.get_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value:ptr BOOL): HRESULT {.stdcall.} =
     value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
     return S_OK
-  vtbl.put_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL):HRESULT {.stdcall.} =
+  vtbl.put_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL): HRESULT {.stdcall.} =
     self.lpVtbl.ExclusiveUserDataFolderAccess = value
     return S_OK
   options.lpVtbl = vtbl.addr
