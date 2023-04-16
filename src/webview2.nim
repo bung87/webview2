@@ -15,14 +15,8 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
     case msg
       of WM_SIZE:
         w.browser.resize()
-
-      of WM_CREATE:
-        let cs = cast[ptr CREATESTRUCT](lParam)
-        w = cast[Webview](cs.lpCreateParams)
-        w[].window.handle = hwnd
-        w.browser.embed(w)
-        # return EmbedBrowserObject(w)
-
+      of WM_CLOSE:
+        DestroyWindow(hwnd)
       of WM_DESTROY:
         # UnEmbedBrowserObject(w)
         PostQuitMessage(0)
@@ -49,7 +43,7 @@ proc  webview_init*(w: Webview): cint =
   wc.hInstance = hInstance
   wc.lpfnWndProc = wndproc
   wc.lpszClassName = classname
-  RegisterClassEx(&wc)
+  RegisterClassExW(&wc)
 
   style = WS_OVERLAPPEDWINDOW
   # if not w.resizable:
@@ -67,14 +61,14 @@ proc  webview_init*(w: Webview): cint =
   rect.left = left
   rect.bottom = rect.bottom - rect.top + top
   rect.top = top
-  w.window.handle = CreateWindowEx(0, classname, w.window.config.title, style, rect.left, rect.top,
+  w.window.handle = CreateWindowW(classname, w.window.config.title, style, rect.left, rect.top,
                      rect.right - rect.left, rect.bottom - rect.top,
                      HWND_DESKTOP, cast[HMENU](NULL), hInstance, cast[LPVOID](w))
   if (w.window.handle == 0):
-    OleUninitialize()
+    # OleUninitialize()
     return -1
 
-  # SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
+  SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
   # webviewContext.set(w.window.handle, w)
   # discard DisplayHTMLPage(w)
 
@@ -82,7 +76,6 @@ proc  webview_init*(w: Webview): cint =
   ShowWindow(w.window.handle, SW_SHOWDEFAULT)
   UpdateWindow(w.window.handle)
   SetFocus(w.window.handle)
-
   return 0
 
 proc webview_loop*(w: Webview, blocking:cint):cint =

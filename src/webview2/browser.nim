@@ -104,7 +104,7 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
 proc resize*(b: Browser) =
   var bounds: RECT
   GetClientRect(b.hwnd, bounds)
-  discard b.controller.lpVtbl.PutBounds(b.controller, bounds)
+  # discard b.controller.lpVtbl.PutBounds(b.controller, bounds)
 
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
@@ -117,7 +117,7 @@ proc embed*(b: Browser; wv: WebView) =
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
 
-  let h = wv.environmentCompletedHandler()
+  let environmentCompletedHandler = wv.environmentCompletedHandler()
 
   # let lib = loadLib loaderPath
   # let createCoreWebView2EnvironmentWithOptions = cast[
@@ -164,7 +164,7 @@ proc embed*(b: Browser; wv: WebView) =
     return S_OK
   options.lpVtbl = vtbl.addr
 
-  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, h)
+  let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)
   # let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
   # let r1 = CreateCoreWebView2EnvironmentWithOptions(folder, dataPath, options, h)
   # let r1 = CreateCoreWebView2Environment(h)
