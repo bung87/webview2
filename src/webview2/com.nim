@@ -6,7 +6,7 @@ type
     lpVtbl*: ptr ICoreWebView2EnvironmentOptionsVTBL
   ICoreWebView2EnvironmentOptionsVTBL* = object of IUnknownVtbl
     AdditionalBrowserArguments*: LPWSTR
-    AllowSingleSignOnUsingOSPrimaryAccount * : BOOL
+    AllowSingleSignOnUsingOSPrimaryAccount* : BOOL
     Language*: LPWSTR
     TargetCompatibleBrowserVersion*: LPWSTR
     ExclusiveUserDataFolderAccess *: BOOL
@@ -33,8 +33,8 @@ type
         self: ptr ICoreWebView2EnvironmentOptions;
         value: LPCWSTR): HRESULT {.stdcall.}
     # ICoreWebView2EnvironmentOptions2
-    get_ExclusiveUserDataFolderAccess*:proc (self: ptr ICoreWebView2EnvironmentOptions;value:ptr BOOL):HRESULT {.stdcall.}
-    put_ExclusiveUserDataFolderAccess*:proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL):HRESULT {.stdcall.}
+    get_ExclusiveUserDataFolderAccess*: proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr BOOL): HRESULT {.stdcall.}
+    put_ExclusiveUserDataFolderAccess*: proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL): HRESULT {.stdcall.}
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
   ICoreWebView2VTBL* = object of IUnknownVtbl
