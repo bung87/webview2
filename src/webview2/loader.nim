@@ -4,7 +4,7 @@ import std/[os, strscans]
 from winlean import useWinUnicode
 
 type PACKAGE_VERSION {.pure.} = object
-  # Version:UINT64
+  Version:UINT64
   Revision: USHORT
   Build: USHORT
   Minor: USHORT
@@ -170,8 +170,8 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
 proc FindInstalledClientDll(clientPath: var string;
     preference: WebView2ReleaseChannelPreference;
     channelStr: var string): int =
-  # let getCurrentPackageInfoProc = cast[GetCurrentPackageInfoProc](GetProcAddress(
-  #         GetModuleHandleW(L"kernelbase.dll"), "GetCurrentPackageInfo"))
+  let getCurrentPackageInfoProc = cast[GetCurrentPackageInfoProc](GetProcAddress(
+          GetModuleHandleW(L"kernelbase.dll"), "GetCurrentPackageInfo"))
   var channel: int = 0
   var lpSubKey: string
   var version: array[4, int]
@@ -182,36 +182,32 @@ proc FindInstalledClientDll(clientPath: var string;
         break
     if FindInstalledClientDllForChannel(lpSubKey, true, clientPath, version):
         break
-    # if getCurrentPackageInfoProc == nil:
-    #   continue
-    # var cPackages:UINT32
-    # var len:UINT32
-    # # APPMODEL_ERROR_NO_PACKAGE
-    # let r = getCurrentPackageInfoProc(1, len.addr, nil, &cPackages)
-    # echo "len",len
-    # echo "cPackages",repr cPackages
-    # echo "r",r
-    # if r != ERROR_INSUFFICIENT_BUFFER:
-    #   continue
+    if getCurrentPackageInfoProc == nil:
+      continue
+    var cPackages:UINT32
+    var len:UINT32
+    # APPMODEL_ERROR_NO_PACKAGE
+    let r = getCurrentPackageInfoProc(1, len.addr, nil, &cPackages)
+    if r != ERROR_INSUFFICIENT_BUFFER:
+      continue
 
-    # if cPackages == 0:
-    #   continue
-    # var packages = cast[ptr UncheckedArray[PACKAGE_INFO]](pkgBuf.addr)
-    # echo "packages", repr packages
-    # var package: PACKAGE_INFO
-    # for j in 0 ..< cPackages:
-    #   if packages[j].packageFamilyName == kchannelPackageFamilyName[channel] == 0:
-    #     package = packages[j]
-    #     break
-    # if package == nil:
-    #   continue
-    # version[0] = 104#package.packageId.version.Major.int
-    # version[1] = 0#package.packageId.version.Minor.int
-    # version[2] = 1293#package.packageId.version.Build.int
-    # version[3] = 63#package.packageId.version.Revision.int
-    # clientPath = $package.path
+    if cPackages == 0:
+      continue
+    var packages = cast[ptr UncheckedArray[PACKAGE_INFO]](cPackages.addr)
+    var package: PACKAGE_INFO
+    for j in 0 ..< cPackages:
+      if packages[j].packageFamilyName == kchannelPackageFamilyName[channel] == 0:
+        package = packages[j]
+        break
+    if package == nil:
+      continue
+    version[0] = package.packageId.version.Major.int
+    version[1] = package.packageId.version.Minor.int
+    version[2] = package.packageId.version.Build.int
+    version[3] = package.packageId.version.Revision.int
+    clientPath = $package.path
 
-    discard CheckVersionAndFindClientDllInFolder(version, clientPath)
+    doAssert CheckVersionAndFindClientDllInFolder(version, clientPath) == true
   channelStr = kChannelName[channel]
   return 0
 
@@ -226,7 +222,6 @@ proc CreateCoreWebView2EnvironmentWithOptions*(browserExecutableFolder: string;
         WebView2ReleaseChannelPreference.kCanary, channelStr) == 0
   else:
     clientPath = $browserExecutableFolder
-  echo clientPath
   return CreateWebViewEnvironmentWithClientDll(clientPath, true,
       WebView2RunTimeType.kInstalled, userDataFolder, cast[ptr IUnknown](
       environmentOptions), environmentCreatedHandler)

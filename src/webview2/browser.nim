@@ -128,10 +128,10 @@ proc embed*(b: Browser; wv: WebView) =
       alloc0(sizeof(
       ICoreWebView2EnvironmentOptions)))
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL(
-    TargetCompatibleBrowserVersion:"104.0.1293.70",
-    AdditionalBrowserArguments:"",
-    Language:"",
-    AllowSingleSignOnUsingOSPrimaryAccount:false
+    TargetCompatibleBrowserVersion: "104.0.1293.70",
+    AdditionalBrowserArguments: "",
+    Language: "",
+    AllowSingleSignOnUsingOSPrimaryAccount: false
     )
   vtbl.get_AdditionalBrowserArguments = proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
     value[] = self.lpVtbl.AdditionalBrowserArguments
@@ -139,7 +139,7 @@ proc embed*(b: Browser; wv: WebView) =
   vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = proc(self: ptr ICoreWebView2EnvironmentOptions;allow: ptr BOOL): HRESULT {.stdcall.} =
     allow[] = self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount
     return S_OK
-  vtbl.get_Language= proc(self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
+  vtbl.get_Language= proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
     value[] = self.lpVtbl.Language
     return S_OK
   vtbl.get_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value: ptr LPWSTR ): HRESULT {.stdcall.} =
@@ -165,10 +165,9 @@ proc embed*(b: Browser; wv: WebView) =
   options.lpVtbl = vtbl.addr
 
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, h)
-  let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
+  # let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
   # let r1 = CreateCoreWebView2EnvironmentWithOptions(folder, dataPath, options, h)
   # let r1 = CreateCoreWebView2Environment(h)
-  echo r1
   doAssert r1 == S_OK, "failed to call CreateCoreWebView2EnvironmentWithOptions"
   var msg: MSG
   while GetMessage(msg.addr, 0, 0, 0) < 0:
