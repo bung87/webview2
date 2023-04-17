@@ -2,6 +2,9 @@
 import winim
 import com
 import types
+from environment_completed_handler import nil
+from controller_completed_handler import nil
+from environment_options import nil
 import std/[os, atomics]
 import loader
 # import memlib
@@ -22,44 +25,17 @@ import loader
 #     environmentOptions: ptr ICoreWebView2EnvironmentOptions;
 #     environmentCreatedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT {.stdcall.}
 
-type ControllerCompletedHandlerVTBL {.pure, inheritable.} = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
-  controller: ptr ICoreWebView2Controller
-  view: ptr ICoreWebView2
 
-type EnvironmentCompletedHandlerVTBL {.pure, inheritable.} = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-  controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
-  handle: HWND
 
 proc controllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](
       alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
-  var vtbl = ControllerCompletedHandlerVTBL(
-    Invoke: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-        errorCode: HRESULT;
-        createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
-    echo "controllerCompletedHandler invoke"
-    discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
-    discard createdController.lpVtbl.GetCoreWebView2(createdController, cast[
-        ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view.addr)
-    
-    cast[ptr ControllerCompletedHandlerVTBL](
-        self.lpVtbl).controller = createdController
+  var vtbl = ControllerCompletedHandlerVTBL()
+  vtbl.Invoke = controller_completed_handler.Invoke
+  vtbl.AddRef = controller_completed_handler.AddRef
+  vtbl.Release = controller_completed_handler.Release
+  vtbl.QueryInterface = controller_completed_handler.QueryInterface
 
-    discard cast[ptr ControllerCompletedHandlerVTBL](
-        self.lpVtbl).view.lpVtbl.AddRef(cast[ptr IUnknown](cast[
-        ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view))
-    # wv.browser.controllerCompleted.store(1)
-    return 0
-  )
-  
-  vtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.} = 1
-  vtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.} = 1
-  vtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-      riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
-    echo "controllerCompletedHandler QueryInterface"
-    ppvObject[] = self
-    discard self.lpVtbl.AddRef(self)
-    return S_OK
   result.lpVtbl = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL](vtbl.addr)
   # wv.browser.controller = cast[ptr ControllerCompletedHandlerVTBL](
   #     result.lpVtbl).controller
@@ -73,31 +49,11 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
   var vtbl = EnvironmentCompletedHandlerVTBL(
       handle: wv.window[].handle,
       controllerCompletedHandler: wv.controllerCompletedHandler(),
-      # Invoke: 
     )
-  
-  vtbl.Invoke = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
-          errorCode: HRESULT;
-          createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    echo "EnvironmentCompletedHandlerVTBL Invoke"
-    discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
-        createdEnvironment, cast[ptr EnvironmentCompletedHandlerVTBL](
-        self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
-        self.lpVtbl).controllerCompletedHandler)
-    return 0
-  vtbl.AddRef = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.} = 1
-  vtbl.Release = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.} = 1
-  vtbl.QueryInterface = proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
-      riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
-    var guid = DEFINE_GUID"4E8A3389-C9D8-4BD2-B6B5-124FEE6CC14D"
-    echo "EnvironmentCompletedHandlerVTBL QueryInterface"
-    if IsEqualIID(riid, guid.addr):
-      ppvObject[] = self
-      discard self.lpVtbl.AddRef(self)
-      return S_OK
-    else:
-      ppvObject[] = nil
-      return E_NOINTERFACE
+  vtbl.Invoke = environment_completed_handler.Invoke
+  vtbl.AddRef = environment_completed_handler.AddRef
+  vtbl.Release = environment_completed_handler.Release
+  vtbl.QueryInterface = environment_completed_handler.QueryInterface
 
   result.lpVtbl = vtbl.addr
 
@@ -133,35 +89,16 @@ proc embed*(b: Browser; wv: WebView) =
     Language: "",
     AllowSingleSignOnUsingOSPrimaryAccount: false
     )
-  vtbl.get_AdditionalBrowserArguments = proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
-    value[] = self.lpVtbl.AdditionalBrowserArguments
-    return S_OK
-  vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = proc(self: ptr ICoreWebView2EnvironmentOptions;allow: ptr BOOL): HRESULT {.stdcall.} =
-    allow[] = self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount
-    return S_OK
-  vtbl.get_Language = proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr LPWSTR): HRESULT {.stdcall.} =
-    value[] = self.lpVtbl.Language
-    return S_OK
-  vtbl.get_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value: ptr LPWSTR ): HRESULT {.stdcall.} =
-    value[] = self.lpVtbl.TargetCompatibleBrowserVersion
-    return S_OK
-  vtbl.put_AdditionalBrowserArguments = proc (self: ptr ICoreWebView2EnvironmentOptions;value:LPCWSTR ): HRESULT {.stdcall.} =
-    self.lpVtbl.AdditionalBrowserArguments = value
-    return S_OK
-  vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = proc (self: ptr ICoreWebView2EnvironmentOptions;allow: BOOL ): HRESULT {.stdcall.} =
-    self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount = allow
-    return S_OK
-  vtbl.put_Language = proc (self: ptr ICoreWebView2EnvironmentOptions;value:LPCWSTR ): HRESULT {.stdcall.} =
-    self.lpVtbl.Language = value
-  vtbl.put_TargetCompatibleBrowserVersion = proc (self: ptr ICoreWebView2EnvironmentOptions; value:LPCWSTR ): HRESULT {.stdcall.} =
-    self.lpVtbl.TargetCompatibleBrowserVersion = value
-    return S_OK
-  vtbl.get_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value:ptr BOOL): HRESULT {.stdcall.} =
-    value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
-    return S_OK
-  vtbl.put_ExclusiveUserDataFolderAccess = proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL): HRESULT {.stdcall.} =
-    self.lpVtbl.ExclusiveUserDataFolderAccess = value
-    return S_OK
+  vtbl.get_AdditionalBrowserArguments = environment_options.get_AdditionalBrowserArguments
+  vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.get_AllowSingleSignOnUsingOSPrimaryAccount
+  vtbl.get_Language = environment_options.get_Language
+  vtbl.get_TargetCompatibleBrowserVersion = environment_options.get_TargetCompatibleBrowserVersion
+  vtbl.put_AdditionalBrowserArguments = environment_options.put_AdditionalBrowserArguments
+  vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.put_AllowSingleSignOnUsingOSPrimaryAccount
+  vtbl.put_Language = environment_options.put_Language
+  vtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
+  vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
+  vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
   options.lpVtbl = vtbl.addr
 
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)
