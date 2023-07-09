@@ -2,7 +2,7 @@ import winim
 import com
 import types
 
-const GUID = DEFINE_GUID"5a8b62da-834f-42aa-a3bd-bd38fc913455"
+const GUID = DEFINE_GUID"6C4819F3-C9B7-4260-8127-C9F5BDE7F68C"
 
 using
   self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
