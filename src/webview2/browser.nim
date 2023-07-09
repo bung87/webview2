@@ -54,11 +54,6 @@ proc embed*(b: Browser; wv: WebView) =
 
   let environmentCompletedHandler = wv.environmentCompletedHandler()
 
-  # let lib = loadLib loaderPath
-  # let createCoreWebView2EnvironmentWithOptions = cast[
-  #     CreateCoreWebView2EnvironmentWithOptions](lib.symAddr("CreateCoreWebView2EnvironmentWithOptions"))
-  # var options = ICoreWebView2EnvironmentOptions()
-
   var options = cast[ptr ICoreWebView2EnvironmentOptions](
       alloc0(sizeof(
       ICoreWebView2EnvironmentOptions)))

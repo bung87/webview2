@@ -8,7 +8,6 @@ using
 proc Invoke*(self;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    echo "EnvironmentCompletedHandlerVTBL Invoke"
     discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
         createdEnvironment, cast[ptr EnvironmentCompletedHandlerVTBL](
         self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
@@ -22,7 +21,6 @@ proc Release*(self): ULONG {.stdcall.} = 1
 proc QueryInterface*(self;
       riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
     var guid = DEFINE_GUID"4E8A3389-C9D8-4BD2-B6B5-124FEE6CC14D"
-    echo "EnvironmentCompletedHandlerVTBL QueryInterface"
     if IsEqualIID(riid, guid.addr):
       ppvObject[] = self
       discard self.lpVtbl.AddRef(self)
