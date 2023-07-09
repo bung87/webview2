@@ -8,7 +8,6 @@ using
 proc Invoke*(self;
         errorCode: HRESULT;
         createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
-    echo "controllerCompletedHandler invoke"
     discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
     discard createdController.lpVtbl.GetCoreWebView2(createdController, cast[
         ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view.addr)
@@ -27,7 +26,6 @@ proc AddRef*(self): ULONG {.stdcall.} = 1
 proc Release*(self): ULONG {.stdcall.} = 1
 
 proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
-    echo "controllerCompletedHandler QueryInterface"
     ppvObject[] = self
     discard self.lpVtbl.AddRef(self)
     return S_OK

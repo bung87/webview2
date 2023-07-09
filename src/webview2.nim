@@ -5,8 +5,6 @@ import winim/inc/mshtml
 import winim/[utils]
 import std/[os]
 
-# {.passl: "-lole32 -lcomctl32 -lcomdlg32 -loleaut32 -luuid -lgdi32".}
-
 const classname = "WebView"
 
 proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.stdcall.} =
