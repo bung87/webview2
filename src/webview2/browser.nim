@@ -8,7 +8,7 @@ from environment_options import nil
 import std/[os, atomics,pathnorm]
 import loader
 
-proc controllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
+proc newControllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](
       alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
   var vtbl = ControllerCompletedHandlerVTBL()
@@ -24,10 +24,10 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
   result = cast[ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler](
       alloc0(sizeof(
       ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler)))
-
+  var cHandler = wv.newControllerCompletedHandler()
   var vtbl = EnvironmentCompletedHandlerVTBL(
       handle: wv.window[].handle,
-      controllerCompletedHandler: wv.controllerCompletedHandler(),
+      controllerCompletedHandler: cHandler,
     )
   vtbl.Invoke = environment_completed_handler.Invoke
   vtbl.AddRef = environment_completed_handler.AddRef
@@ -35,6 +35,9 @@ proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebVi
   vtbl.QueryInterface = environment_completed_handler.QueryInterface
 
   result.lpVtbl = vtbl.addr
+  # discard environment_completed_handler.AddRef(result)
+  # discard controller_completed_handler.AddRef(cHandler)
+
 
 proc resize*(b: Browser) =
   var bounds: RECT
