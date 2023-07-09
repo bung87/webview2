@@ -1,2 +1,4 @@
 rcedit.exe .\src\webview2.exe --set-file-version "10.7"
 rcedit.exe .\src\webview2.exe --set-product-version "10.7"
+
+powershell [guid]::NewGuid()

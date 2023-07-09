@@ -2,17 +2,18 @@ import winim
 import com
 import types
 
+const GUID = DEFINE_GUID"6671e93d-1a4b-49b3-b510-3d2fdb8ac864"
+
 using
   self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler
 
 proc Invoke*(self;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    discard createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
+    return createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
         createdEnvironment, cast[ptr EnvironmentCompletedHandlerVTBL](
         self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
         self.lpVtbl).controllerCompletedHandler)
-    return 0
 
 proc AddRef*(self): ULONG {.stdcall.} =
   inc self.refCount
@@ -26,13 +27,13 @@ proc Release*(self): ULONG {.stdcall.} =
   dealloc self
   return 0
 
-proc QueryInterface*(self;
-      riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
-    var guid = DEFINE_GUID"4E8A3389-C9D8-4BD2-B6B5-124FEE6CC14D"
-    if IsEqualIID(riid, guid.addr):
-      ppvObject[] = self
-      discard self.lpVtbl.AddRef(self)
-      return S_OK
-    else:
-      ppvObject[] = nil
-      return E_NOINTERFACE
+proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
+  if ppvObject == nil:
+    return E_NOINTERFACE
+  if riid[] == GUID:
+    ppvObject[] = self
+    discard self.lpVtbl.AddRef(self)
+    return S_OK
+  else:
+    ppvObject[] = nil
+    return E_NOINTERFACE
