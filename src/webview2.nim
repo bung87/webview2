@@ -32,10 +32,8 @@ proc  webview_init*(w: Webview): cint =
   hInstance = GetModuleHandle(NULL)
   if hInstance == 0:
     return -1
-  
   if OleInitialize(NULL) != S_OK:
     return -1
-  
   ZeroMemory(&wc, sizeof(WNDCLASSEX))
   wc.cbSize = sizeof(WNDCLASSEX).UINT
   wc.hInstance = hInstance
@@ -60,8 +58,8 @@ proc  webview_init*(w: Webview): cint =
   rect.bottom = rect.bottom - rect.top + top
   rect.top = top
   w.window.handle = CreateWindowW(classname, w.window.config.title, style, rect.left, rect.top,
-                     rect.right - rect.left, rect.bottom - rect.top,
-                     HWND_DESKTOP, cast[HMENU](NULL), hInstance, cast[LPVOID](w))
+    rect.right - rect.left, rect.bottom - rect.top,
+    HWND_DESKTOP, cast[HMENU](NULL), hInstance, cast[LPVOID](w))
   if (w.window.handle == 0):
     # OleUninitialize()
     return -1
@@ -82,13 +80,13 @@ proc webview_loop*(w: Webview, blocking:cint):cint =
     if (GetMessage(msg.addr, 0, 0, 0)<0): return 0
   else:
     if not PeekMessage(msg.addr, 0, 0, 0, PM_REMOVE) == TRUE: return 0
-  
+
   case msg.message:
   of WM_QUIT:
     return -1
   of WM_COMMAND,
-   WM_KEYDOWN,
-   WM_KEYUP: 
+    WM_KEYDOWN,
+    WM_KEYUP:
     if (msg.wParam == VK_F5):
       return 0
     # var r:HRESULT = S_OK
@@ -102,21 +100,19 @@ proc webview_loop*(w: Webview, blocking:cint):cint =
     #     r = pIOIPAO.TranslateAccelerator(msg.addr)
     #     discard pIOIPAO.lpVtbl.Release(cast[ptr IUnknown](pIOIPAO))
     #   discard webBrowser2.lpVtbl.Release(cast[ptr IUnknown](webBrowser2))
-    
     # if (r != S_FALSE):
     #   return
-  
   else:
     TranslateMessage(msg.addr)
     DispatchMessage(msg.addr)
-  
+
   return 0
 
 proc run*(w: Webview) {.inline.} =
   ## `run` starts the main UI loop until the user closes the window or `exit()` is called.
   block mainLoop:
     while w.webview_loop(1) == 0: discard
-  
+
 proc run*(w: Webview, quitProc: proc () {.noconv.}, controlCProc: proc () {.noconv.}, autoClose: static[bool] = true) {.inline.} =
   ## `run` starts the main UI loop until the user closes the window. Same as `run` but with extras.
   ## * `quitProc` is a function to run at exit, needs `{.noconv.}` pragma.
@@ -135,5 +131,5 @@ when isMainModule:
   var v = newWebView()
   assert v.webview_init() == 0
   v.init
-  
+
   v.run

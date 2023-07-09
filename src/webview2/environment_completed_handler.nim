@@ -14,9 +14,17 @@ proc Invoke*(self;
         self.lpVtbl).controllerCompletedHandler)
     return 0
 
-proc AddRef*(self): ULONG {.stdcall.} = 1
+proc AddRef*(self): ULONG {.stdcall.} =
+  inc self.refCount
+  return self.refCount
 
-proc Release*(self): ULONG {.stdcall.} = 1
+proc Release*(self): ULONG {.stdcall.} =
+  if self.refCount > 1:
+    dec self.refCount
+    return self.refCount
+
+  dealloc self
+  return 0
 
 proc QueryInterface*(self;
       riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
