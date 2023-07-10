@@ -8,25 +8,22 @@ from environment_options import nil
 import std/[os, atomics,pathnorm]
 import loader
 
-proc newControllerCompletedHandler(wv: WebView): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
-  result = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler](
-      alloc0(sizeof(ICoreWebView2CreateCoreWebView2ControllerCompletedHandler)))
+proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
+  result = create(type result[])
   var vtbl = ControllerCompletedHandlerVTBL()
   vtbl.Invoke = controller_completed_handler.Invoke
   vtbl.AddRef = controller_completed_handler.AddRef
   vtbl.Release = controller_completed_handler.Release
   vtbl.QueryInterface = controller_completed_handler.QueryInterface
 
-  result.lpVtbl = cast[ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL](vtbl.addr)
+  result.lpVtbl = vtbl.addr
 
 
-proc environmentCompletedHandler*(wv: Webview): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
-  result = cast[ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler](
-      alloc0(sizeof(
-      ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler)))
-  var cHandler = wv.newControllerCompletedHandler()
+proc environmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
+  result = create(type result[])
+  var cHandler = newControllerCompletedHandler()
   var vtbl = EnvironmentCompletedHandlerVTBL(
-      handle: wv.window[].handle,
+      # handle: wv.window[].handle,
       controllerCompletedHandler: cHandler,
     )
   vtbl.Invoke = environment_completed_handler.Invoke
@@ -55,11 +52,10 @@ proc embed*(b: Browser; wv: WebView) =
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
 
-  let environmentCompletedHandler = wv.environmentCompletedHandler()
+  var environmentCompletedHandler = environmentCompletedHandler()
+  cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).handle = wv.window[].handle
 
-  var options = cast[ptr ICoreWebView2EnvironmentOptions](
-      alloc0(sizeof(
-      ICoreWebView2EnvironmentOptions)))
+  var options = create(ICoreWebView2EnvironmentOptions)
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL(
     TargetCompatibleBrowserVersion: "104.0.1293.70",
     AdditionalBrowserArguments: "",
