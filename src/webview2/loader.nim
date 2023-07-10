@@ -143,7 +143,8 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
     runtimeType: WebView2RunTimeType; userDataDir: string;
     environmentOptions: ptr IUnknown;
     envCompletedHandler: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): HRESULT =
-
+  doAssert environmentOptions != nil
+  doAssert envCompletedHandler != nil
   let clientDll = LoadLibrary(lpLibFileName)
   if clientDll == 0:
     return HRESULT_FROM_WIN32(GetLastError())
@@ -155,10 +156,14 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
     return HRESULT_FROM_WIN32(GetLastError())
 
   let createWebViewEnvironmentWithOptionsInternalProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
-  var wStr = newWideCstring(userDataDir)
+  var wStr = L(userDataDir)
   # var myArr: array[MAX_PATH, Utf16Char]
   # copyMem(myArr[0].addr, cast[pointer](wStr[0].addr), wStr.len)
-  let hr = createWebViewEnvironmentWithOptionsInternalProc(true, runtimeType, cast[PCWSTR](wStr[0].addr), environmentOptions, envCompletedHandler)
+  # echo  cast[string](myArr)
+  # echo userDataDir.len
+  # echo wStr.len
+  echo repr environmentOptions
+  let hr = createWebViewEnvironmentWithOptionsInternalProc(true, runtimeType, wStr, environmentOptions, envCompletedHandler)
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
   return hr

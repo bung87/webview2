@@ -4,7 +4,12 @@ import winim
 type
   ICoreWebView2EnvironmentOptions* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentOptionsVTBL
-  ICoreWebView2EnvironmentOptionsVTBL* = object of IUnknownVtbl
+    refCount*: ULONG
+  ICoreWebView2EnvironmentOptionsVTBL* {.pure.} = object
+    AddRef*: proc (self: ptr ICoreWebView2EnvironmentOptions): ULONG {.stdcall.}
+    Release*: proc (self: ptr ICoreWebView2EnvironmentOptions): ULONG {.stdcall.}
+    QueryInterface*: proc(self: ptr ICoreWebView2EnvironmentOptions;
+        riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
     AdditionalBrowserArguments*: LPWSTR
     AllowSingleSignOnUsingOSPrimaryAccount* : BOOL
     Language*: LPWSTR

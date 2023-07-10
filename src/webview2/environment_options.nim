@@ -2,9 +2,32 @@ import winim
 import com
 import types
 
+const GUID = DEFINE_GUID"2FDE08A8-1E9A-4766-8C05-95A9CEB9D1C5"
 using
   self: ptr ICoreWebView2EnvironmentOptions
 
+proc AddRef*(self): ULONG {.stdcall.} =
+  inc self.refCount
+  return self.refCount
+
+proc Release*(self): ULONG {.stdcall.} =
+  if self.refCount > 1:
+    dec self.refCount
+    return self.refCount
+
+  dealloc self
+  return 0
+
+proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
+  if ppvObject == nil:
+    return E_NOINTERFACE
+  if riid[] == GUID:
+    ppvObject[] = self
+    # discard cast[ptr IUnknown](self.lpVtbl).AddRef(self)
+    return S_OK
+  else:
+    ppvObject[] = nil
+    return E_NOINTERFACE
 
 proc get_AdditionalBrowserArguments*(self;value: ptr LPWSTR): HRESULT {.stdcall.} =
   value[] = self.lpVtbl.AdditionalBrowserArguments
@@ -43,3 +66,8 @@ proc get_ExclusiveUserDataFolderAccess*(self;value:ptr BOOL): HRESULT {.stdcall.
 proc put_ExclusiveUserDataFolderAccess*(self;value: BOOL): HRESULT {.stdcall.} =
   self.lpVtbl.ExclusiveUserDataFolderAccess = value
   return S_OK
+
+
+# .QueryInterface = opts_QueryInterface,
+# 	.AddRef = com_AddRef,
+# 	.Release = com_Release,

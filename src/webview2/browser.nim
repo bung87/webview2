@@ -59,7 +59,7 @@ proc embed*(b: Browser; wv: WebView) =
 
   var options = create(ICoreWebView2EnvironmentOptions)
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL(
-    TargetCompatibleBrowserVersion: "104.0.1293.70",
+    TargetCompatibleBrowserVersion: L"99.0.1150.38",
     AdditionalBrowserArguments: "",
     Language: "",
     AllowSingleSignOnUsingOSPrimaryAccount: false
@@ -74,6 +74,9 @@ proc embed*(b: Browser; wv: WebView) =
   vtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
   vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
   vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
+  vtbl.AddRef = environment_options.AddRef
+  vtbl.Release = environment_options.Release
+  vtbl.QueryInterface = environment_options.QueryInterface
   options.lpVtbl = vtbl.addr
 
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)
