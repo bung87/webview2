@@ -36,10 +36,12 @@ proc environmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2Environm
   # discard controller_completed_handler.AddRef(cHandler)
 
 
-proc resize*(b: Browser) =
+proc resize*(b: Browser, hwnd: HWND) =
   var bounds: RECT
-  GetClientRect(b.hwnd, bounds)
-  # discard b.controller.lpVtbl.PutBounds(b.controller, bounds)
+  let g = GetClientRect(hwnd, bounds)
+  doAssert g == TRUE, $GetLastError()
+  doAssert b.controller != nil
+  discard b.controller.lpVtbl.PutBounds(b.controller, bounds)
 
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
