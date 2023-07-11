@@ -159,7 +159,6 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
   var wStr = L(userDataDir)
   # var myArr: array[MAX_PATH, Utf16Char]
   # copyMem(myArr[0].addr, cast[pointer](wStr[0].addr), wStr.len)
-  echo repr environmentOptions
   let hr = createWebViewEnvironmentWithOptionsInternalProc(true, runtimeType, wStr, environmentOptions, envCompletedHandler)
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)

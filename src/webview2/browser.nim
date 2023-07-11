@@ -26,11 +26,10 @@ proc environmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2Environm
       # handle: wv.window[].handle,
       controllerCompletedHandler: cHandler,
     )
+  vtbl.QueryInterface = environment_completed_handler.QueryInterface
   vtbl.Invoke = environment_completed_handler.Invoke
   vtbl.AddRef = environment_completed_handler.AddRef
   vtbl.Release = environment_completed_handler.Release
-  vtbl.QueryInterface = environment_completed_handler.QueryInterface
-
   result.lpVtbl = vtbl.addr
   # discard environment_completed_handler.AddRef(result)
   # discard controller_completed_handler.AddRef(cHandler)
@@ -48,7 +47,9 @@ proc embed*(b: Browser; wv: WebView) =
   let exePath = getAppFilename()
   var (dir, name, ext) = splitFile(exePath)
   var dataPath = normalizePath(getEnv("AppData") / name)
-  createDir(dataPath)
+  # var dataPath = getTempDir()  / name
+  echo dataPath
+  # createDir(dataPath)
   # var versionInfo: LPWSTR
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo
@@ -58,25 +59,21 @@ proc embed*(b: Browser; wv: WebView) =
   cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).handle = wv.window[].handle
 
   var options = create(ICoreWebView2EnvironmentOptions)
-  var vtbl = ICoreWebView2EnvironmentOptionsVTBL(
-    TargetCompatibleBrowserVersion: L"99.0.1150.38",
-    AdditionalBrowserArguments: "",
-    Language: "",
-    AllowSingleSignOnUsingOSPrimaryAccount: false
-    )
-  vtbl.get_AdditionalBrowserArguments = environment_options.get_AdditionalBrowserArguments
-  vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.get_AllowSingleSignOnUsingOSPrimaryAccount
-  vtbl.get_Language = environment_options.get_Language
-  vtbl.get_TargetCompatibleBrowserVersion = environment_options.get_TargetCompatibleBrowserVersion
-  vtbl.put_AdditionalBrowserArguments = environment_options.put_AdditionalBrowserArguments
-  vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.put_AllowSingleSignOnUsingOSPrimaryAccount
-  vtbl.put_Language = environment_options.put_Language
-  vtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
-  vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
-  vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
+  var vtbl = ICoreWebView2EnvironmentOptionsVTBL()
+  vtbl.QueryInterface = environment_options.QueryInterface
   vtbl.AddRef = environment_options.AddRef
   vtbl.Release = environment_options.Release
-  vtbl.QueryInterface = environment_options.QueryInterface
+  vtbl.get_AdditionalBrowserArguments = environment_options.get_AdditionalBrowserArguments
+  vtbl.put_AdditionalBrowserArguments = environment_options.put_AdditionalBrowserArguments
+  vtbl.get_Language = environment_options.get_Language
+  vtbl.put_Language = environment_options.put_Language
+  vtbl.get_TargetCompatibleBrowserVersion = environment_options.get_TargetCompatibleBrowserVersion
+  vtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
+  vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.get_AllowSingleSignOnUsingOSPrimaryAccount
+  vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.put_AllowSingleSignOnUsingOSPrimaryAccount
+  # vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
+  # vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
+  
   options.lpVtbl = vtbl.addr
 
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)

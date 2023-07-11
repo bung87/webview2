@@ -6,17 +6,6 @@ const GUID = DEFINE_GUID"2FDE08A8-1E9A-4766-8C05-95A9CEB9D1C5"
 using
   self: ptr ICoreWebView2EnvironmentOptions
 
-proc AddRef*(self): ULONG {.stdcall.} =
-  inc self.refCount
-  return self.refCount
-
-proc Release*(self): ULONG {.stdcall.} =
-  if self.refCount > 1:
-    dec self.refCount
-    return self.refCount
-
-  dealloc self
-  return 0
 
 proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
   if ppvObject == nil:
@@ -29,45 +18,59 @@ proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdc
     ppvObject[] = nil
     return E_NOINTERFACE
 
+proc AddRef*(self): ULONG {.stdcall.} =
+  # inc self.refCount
+  return 1 #self.refCount
+
+proc Release*(self): ULONG {.stdcall.} =
+  # if self.refCount > 1:
+  #   dec self.refCount
+  #   return self.refCount
+
+  # dealloc self
+  return 0
+
 proc get_AdditionalBrowserArguments*(self;value: ptr LPWSTR): HRESULT {.stdcall.} =
-  value[] = self.lpVtbl.AdditionalBrowserArguments
+  # value[] = self.lpVtbl.AdditionalBrowserArguments
   return S_OK
 
-proc get_AllowSingleSignOnUsingOSPrimaryAccount*(self;allow: ptr BOOL): HRESULT {.stdcall.} =
-  allow[] = self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount
+proc put_AdditionalBrowserArguments*(self;value:LPCWSTR ): HRESULT {.stdcall.} =
+  # self.lpVtbl.AdditionalBrowserArguments = value
   return S_OK
 
 proc get_Language*(self;value: ptr LPWSTR): HRESULT {.stdcall.} =
-  value[] = self.lpVtbl.Language
-  return S_OK
-
-proc get_TargetCompatibleBrowserVersion*(self; value: ptr LPWSTR ): HRESULT {.stdcall.} =
-  value[] = self.lpVtbl.TargetCompatibleBrowserVersion
-  return S_OK
-proc put_AdditionalBrowserArguments*(self;value:LPCWSTR ): HRESULT {.stdcall.} =
-  self.lpVtbl.AdditionalBrowserArguments = value
-  return S_OK
-
-proc put_AllowSingleSignOnUsingOSPrimaryAccount*(self;allow: BOOL ): HRESULT {.stdcall.} =
-  self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount = allow
+  # value[] = self.lpVtbl.Language
+  let ws = L"en-US"
+  value[] = cast[LPOLESTR](CoTaskMemAlloc(SIZE_T (ws.len + 2) * 2))
+  value[] <<< ws
   return S_OK
 
 proc put_Language*(self;value:LPCWSTR ): HRESULT {.stdcall.} =
-  self.lpVtbl.Language = value
+  # self.lpVtbl.Language = value
+  return S_OK
+
+proc get_TargetCompatibleBrowserVersion*(self; value: ptr LPWSTR ): HRESULT {.stdcall.} =
+  let ws = L"97.0.1072.69"
+  value[] = cast[LPOLESTR](CoTaskMemAlloc(SIZE_T (ws.len + 2) * 2))
+  value[] <<< ws
+  return S_OK
 
 proc put_TargetCompatibleBrowserVersion*(self; value:LPCWSTR ): HRESULT {.stdcall.} =
-  self.lpVtbl.TargetCompatibleBrowserVersion = value
+  # self.lpVtbl.TargetCompatibleBrowserVersion = value
   return S_OK
 
-proc get_ExclusiveUserDataFolderAccess*(self;value:ptr BOOL): HRESULT {.stdcall.} =
-  value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
+proc get_AllowSingleSignOnUsingOSPrimaryAccount*(self;allow: ptr BOOL): HRESULT {.stdcall.} =
+  allow[] = TRUE
   return S_OK
 
-proc put_ExclusiveUserDataFolderAccess*(self;value: BOOL): HRESULT {.stdcall.} =
-  self.lpVtbl.ExclusiveUserDataFolderAccess = value
+proc put_AllowSingleSignOnUsingOSPrimaryAccount*(self;allow: BOOL ): HRESULT {.stdcall.} =
+  # self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount = allow
   return S_OK
 
+# proc get_ExclusiveUserDataFolderAccess*(self;value:ptr BOOL): HRESULT {.stdcall.} =
+#   value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
+#   return S_OK
 
-# .QueryInterface = opts_QueryInterface,
-# 	.AddRef = com_AddRef,
-# 	.Release = com_Release,
+# proc put_ExclusiveUserDataFolderAccess*(self;value: BOOL): HRESULT {.stdcall.} =
+#   self.lpVtbl.ExclusiveUserDataFolderAccess = value
+#   return S_OK

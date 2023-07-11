@@ -17,15 +17,15 @@ proc Invoke*(self;
         self.lpVtbl).controllerCompletedHandler)
 
 proc AddRef*(self): ULONG {.stdcall.} =
-  inc self.refCount
-  return self.refCount
+  # inc self.refCount
+  return 1# self.refCount
 
 proc Release*(self): ULONG {.stdcall.} =
-  if self.refCount > 1:
-    dec self.refCount
-    return self.refCount
+  # if self.refCount > 1:
+  #   dec self.refCount
+  #   return self.refCount
 
-  dealloc self
+  # dealloc self
   return 0
 
 proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
@@ -33,7 +33,6 @@ proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdc
     return E_NOINTERFACE
   if riid[] == GUID:
     ppvObject[] = self
-    discard self.lpVtbl.AddRef(self)
     return S_OK
   else:
     ppvObject[] = nil
