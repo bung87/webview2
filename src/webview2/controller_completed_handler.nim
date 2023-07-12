@@ -13,7 +13,7 @@ proc Invoke*(self;
     createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
   # discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
   let e = createdController.lpVtbl.QueryInterface(cast[ptr IUnknown](createdController), 
-    IID_ICoreWebView2Controller2.unsafeAddr,
+    GUID.unsafeAddr,
     cast[ptr pointer](cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).controller.addr))
   if e != S_OK:
     return e
