@@ -1,6 +1,7 @@
 import winim
 import com
 import types
+import globals
 
 const GUID = DEFINE_GUID"6C4819F3-C9B7-4260-8127-C9F5BDE7F68C"
 const  IID_ICoreWebView2Controller2 = DEFINE_GUID"C979903E-D4CA-4228-92EB-47EE3FA96EAB"
@@ -14,11 +15,10 @@ proc Invoke*(self;
   # discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
   let e = createdController.lpVtbl.QueryInterface(cast[ptr IUnknown](createdController), 
     GUID.unsafeAddr,
-    cast[ptr pointer](cast[ptr ControllerCompletedHandlerVTBL](self.lpVtbl).controller.addr))
+    cast[ptr pointer](controller.addr))
   if e != S_OK:
     return e
-  let hr = createdController.lpVtbl.GetCoreWebView2(createdController, cast[
-    ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view.addr)
+  let hr = createdController.lpVtbl.GetCoreWebView2(createdController,view.addr)
   if S_OK != hr:
     return hr
 

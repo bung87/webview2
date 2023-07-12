@@ -43,10 +43,10 @@ type
     browser*: Browser
   WebView* = ref WebViewObj
 
-type ControllerCompletedHandlerVTBL* {.pure.} = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
-  controller*: ptr ICoreWebView2Controller
-  view*: ptr ICoreWebView2
+# type ControllerCompletedHandlerVTBL* {.pure.} = object of ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
+  # controller*: ptr ICoreWebView2Controller
+  # view*: ptr ICoreWebView2
 
-type EnvironmentCompletedHandlerVTBL* {.pure.} = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-  controllerCompletedHandler*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
-  handle*: HWND
+# type EnvironmentCompletedHandlerVTBL* {.pure.} = object of ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
+  # controllerCompletedHandler*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
+  # winHandle*: HWND
