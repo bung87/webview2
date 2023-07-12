@@ -149,10 +149,12 @@ type
     Close*: proc (self: ptr ICoreWebView2Controller): HRESULT
     GetCoreWebView2*: proc (self: ptr ICoreWebView2Controller;
         coreWebView2: ptr ptr ICoreWebView2): HRESULT
+    GetDefaultBackgroundColor*: HRESULT
+    PutDefaultBackgroundColor*: HRESULT
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure,
       inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-    refCount*: ULONG
+    # refCount*: ULONG
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL * {.pure, inheritable.}
     = object
     AddRef*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
@@ -165,7 +167,7 @@ type
       errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandler * {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
-    refCount*: ULONG
+    # refCount*: ULONG
   ICoreWebView2ExecuteScriptCompletedHandler * {.pure.} = object
     lpVtbl*: ptr ICoreWebView2ExecuteScriptCompletedHandlerVTBL
   ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler *
@@ -186,9 +188,9 @@ type
         errorCode: HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
-  ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvoke * = proc (
-      i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-      p: HRESULT; createdController: ptr ICoreWebView2Controller)
+#   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvoke * = proc (
+#       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+#       p: HRESULT; createdController: ptr ICoreWebView2Controller)
   ICoreWebView2SettingsVTBL* = object of IUnknownVtbl
     GetIsScriptEnabled*: proc (self: ptr ICoreWebView2Settings;
         enabled: ptr bool): HRESULT
