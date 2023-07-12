@@ -8,6 +8,9 @@ from environment_options import nil
 import std/[os, atomics,pathnorm]
 import loader
 from globals import nil
+const GUID = DEFINE_GUID"6C4819F3-C9B7-4260-8127-C9F5BDE7F68C"
+using
+  self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
 
 proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = create(type result[])
@@ -52,9 +55,8 @@ proc embed*(b: Browser; wv: WebView) =
   globals.winHandle = wv.window[].handle
   var environmentCompletedHandler {.global.} = newEnvironmentCompletedHandler()
   globals.controllerCompletedHandler = newControllerCompletedHandler()
+  echo repr globals.controllerCompletedHandler
   # cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).handle = wv.window[].handle
-  echo repr globals.controllerCompletedHandler.lpVtbl
-  echo repr globals.controllerCompletedHandler.lpVtbl.Invoke
   var options = create(ICoreWebView2EnvironmentOptions)
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL()
   vtbl.QueryInterface = environment_options.QueryInterface
@@ -89,7 +91,7 @@ proc embed*(b: Browser; wv: WebView) =
   b.settings = settings
 
 proc navigate*(b: Browser; url: string) =
-  discard b.view.lpVtbl.Navigate(b.view[], newWideCString(url))
+  discard b.view.lpVtbl.Navigate(b.view[], L(url))
 
 
 proc AddScriptToExecuteOnDocumentCreated*(b: Browser; script: string) =

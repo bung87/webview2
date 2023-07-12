@@ -43,7 +43,8 @@ proc initializeWindow*(wv: WebView) =
   # wv.browser.resize()
   # wv.browser.saveSettings()
 
-proc init*(wv: WebView) =
+proc initWebView*(wv: WebView) =
+  
   ## initializeWindow and navigate
   # for s in ["WEBVIEW2_BROWSER_EXECUTABLE_FOLDER", "WEBVIEW2_USER_DATA_FOLDER", "WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", "WEBVIEW2_RELEASE_CHANNEL_PREFERENCE"]:
   #   delEnv(s)

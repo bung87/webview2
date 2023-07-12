@@ -131,6 +131,6 @@ when isMainModule:
   SetCurrentProcessExplicitAppUserModelID("webview2 app")
   var v = newWebView()
   assert v.webview_init() == 0
-  v.init
+  v.initWebView
 
   v.run
