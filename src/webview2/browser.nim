@@ -55,10 +55,10 @@ proc embed*(b: Browser; wv: WebView) =
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
 
-  var environmentCompletedHandler = environmentCompletedHandler()
+  var environmentCompletedHandler {.global.} = environmentCompletedHandler()
   cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).handle = wv.window[].handle
 
-  var options = create(ICoreWebView2EnvironmentOptions)
+  var options {.global.} = create(ICoreWebView2EnvironmentOptions)
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL()
   vtbl.QueryInterface = environment_options.QueryInterface
   vtbl.AddRef = environment_options.AddRef

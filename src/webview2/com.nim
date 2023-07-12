@@ -20,16 +20,16 @@ type
         value: ptr LPWSTR): HRESULT {.stdcall.}
     put_Language*: proc (self: ptr ICoreWebView2EnvironmentOptions;
         value: LPCWSTR): HRESULT {.stdcall.}
-    get_TargetCompatibleBrowserVersion * : proc (
+    get_TargetCompatibleBrowserVersion* : proc (
         self: ptr ICoreWebView2EnvironmentOptions;
         value: ptr LPWSTR): HRESULT {.stdcall.}
-    put_TargetCompatibleBrowserVersion * : proc (
+    put_TargetCompatibleBrowserVersion* : proc (
         self: ptr ICoreWebView2EnvironmentOptions;
         value: LPCWSTR): HRESULT {.stdcall.}
-    get_AllowSingleSignOnUsingOSPrimaryAccount * : proc(
+    get_AllowSingleSignOnUsingOSPrimaryAccount* : proc(
         self: ptr ICoreWebView2EnvironmentOptions;
         allow: ptr BOOL): HRESULT {.stdcall.}
-    put_AllowSingleSignOnUsingOSPrimaryAccount * : proc(
+    put_AllowSingleSignOnUsingOSPrimaryAccount* : proc(
         self: ptr ICoreWebView2EnvironmentOptions;
         allow: BOOL): HRESULT {.stdcall.}
     # ICoreWebView2EnvironmentOptions2
@@ -157,10 +157,10 @@ type
     # refCount*: ULONG
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL * {.pure, inheritable.}
     = object
-    AddRef*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
-    Release*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
+    AddRef*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
+    Release*: proc (self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler): ULONG {.stdcall.}
     Invoke*: ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerInvoke * = proc (
       self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
@@ -182,12 +182,12 @@ type
         errorCode: HRESULT; resultObjectAsJson: LPCWSTR) {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL * {.pure, inheritable.}
     = object
+    QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+        riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
     AddRef*: proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.}
     Release*: proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ULONG {.stdcall.}
     Invoke*: proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
         errorCode: HRESULT; createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
-    QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
-        riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
 #   ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerInvoke * = proc (
 #       i: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
 #       p: HRESULT; createdController: ptr ICoreWebView2Controller)
