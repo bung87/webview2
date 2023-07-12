@@ -11,29 +11,23 @@ import loader
 proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = create(type result[])
   var vtbl = ControllerCompletedHandlerVTBL()
-  vtbl.Invoke = controller_completed_handler.Invoke
+  vtbl.QueryInterface = controller_completed_handler.QueryInterface
   vtbl.AddRef = controller_completed_handler.AddRef
   vtbl.Release = controller_completed_handler.Release
-  vtbl.QueryInterface = controller_completed_handler.QueryInterface
-
+  vtbl.Invoke = controller_completed_handler.Invoke
   result.lpVtbl = vtbl.addr
 
 
 proc environmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   result = create(type result[])
-  var cHandler = newControllerCompletedHandler()
-  var vtbl = EnvironmentCompletedHandlerVTBL(
-      # handle: wv.window[].handle,
-      controllerCompletedHandler: cHandler,
-    )
+  var cHandler {.global.} = newControllerCompletedHandler()
+  var vtbl = EnvironmentCompletedHandlerVTBL()
   vtbl.QueryInterface = environment_completed_handler.QueryInterface
-  vtbl.Invoke = environment_completed_handler.Invoke
   vtbl.AddRef = environment_completed_handler.AddRef
   vtbl.Release = environment_completed_handler.Release
+  vtbl.Invoke = environment_completed_handler.Invoke
+  vtbl.controllerCompletedHandler = cHandler
   result.lpVtbl = vtbl.addr
-  # discard environment_completed_handler.AddRef(result)
-  # discard controller_completed_handler.AddRef(cHandler)
-
 
 proc resize*(b: Browser, hwnd: HWND) =
   var bounds: RECT
@@ -58,7 +52,7 @@ proc embed*(b: Browser; wv: WebView) =
   var environmentCompletedHandler {.global.} = environmentCompletedHandler()
   cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).handle = wv.window[].handle
 
-  var options {.global.} = create(ICoreWebView2EnvironmentOptions)
+  var options = create(ICoreWebView2EnvironmentOptions)
   var vtbl = ICoreWebView2EnvironmentOptionsVTBL()
   vtbl.QueryInterface = environment_options.QueryInterface
   vtbl.AddRef = environment_options.AddRef
@@ -75,7 +69,7 @@ proc embed*(b: Browser; wv: WebView) =
   # vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
   
   options.lpVtbl = vtbl.addr
-
+  echo repr cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).controllerCompletedHandler
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)
   # let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
 

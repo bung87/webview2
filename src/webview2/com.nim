@@ -151,11 +151,11 @@ type
         coreWebView2: ptr ptr ICoreWebView2): HRESULT
     GetDefaultBackgroundColor*: HRESULT
     PutDefaultBackgroundColor*: HRESULT
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler * {.pure,
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure,
       inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
     # refCount*: ULONG
-  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL * {.pure, inheritable.}
+  ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* {.pure, inheritable.}
     = object
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}

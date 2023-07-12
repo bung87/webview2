@@ -30,7 +30,7 @@ proc Release*(self): ULONG {.stdcall.} =
 proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
   if ppvObject == nil:
     return E_NOINTERFACE
-  if riid[] == GUID:
+  if riid[] == GUID or riid[] == IID_IUnknown:
     ppvObject[] = self
     return S_OK
   else:
