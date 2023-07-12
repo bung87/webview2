@@ -49,7 +49,7 @@ proc embed*(b: Browser; wv: WebView) =
   var dataPath = normalizePath(getEnv("AppData") / name)
   # var dataPath = getTempDir()  / name
   echo dataPath
-  # createDir(dataPath)
+  createDir(dataPath)
   # var versionInfo: LPWSTR
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo

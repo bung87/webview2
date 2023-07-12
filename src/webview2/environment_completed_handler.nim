@@ -10,7 +10,6 @@ using
 proc Invoke*(self;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    echo repr createdEnvironment
     return createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
         createdEnvironment, cast[ptr EnvironmentCompletedHandlerVTBL](
         self.lpVtbl).handle, cast[ptr EnvironmentCompletedHandlerVTBL](
