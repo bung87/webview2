@@ -35,72 +35,74 @@ type
     # ICoreWebView2EnvironmentOptions2
     get_ExclusiveUserDataFolderAccess*: proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr BOOL): HRESULT {.stdcall.}
     put_ExclusiveUserDataFolderAccess*: proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL): HRESULT {.stdcall.}
+  # https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.1823.32
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
   ICoreWebView2VTBL* = object of IUnknownVtbl
-    GetSettings*: proc (self: ptr ICoreWebView2;
-        settings: ptr ICoreWebView2Settings): HRESULT {.stdcall.}
-    GetSource*: HRESULT
-    Navigate*: proc (self: ptr ICoreWebView2; url: LPCWSTR): HRESULT {.stdcall.}
-    NavigateToString*: proc (self: ptr ICoreWebView2;
-        html_content: LPCWSTR): HRESULT {.stdcall.}
-    AddNavigationStarting*: HRESULT
-    RemoveNavigationStarting*: HRESULT
-    AddContentLoading*: HRESULT
-    RemoveContentLoading*: HRESULT
-    AddSourceChanged*: HRESULT
-    RemoveSourceChanged*: HRESULT
-    AddHistoryChanged*: HRESULT
-    RemoveHistoryChanged*: HRESULT
-    AddNavigationCompleted*: HRESULT
-    RemoveNavigationCompleted*: HRESULT
-    AddFrameNavigationStarting*: HRESULT
-    RemoveFrameNavigationStarting*: HRESULT
-    AddFrameNavigationCompleted*: HRESULT
-    RemoveFrameNavigationCompleted*: HRESULT
-    AddScriptDialogOpening*: HRESULT
-    RemoveScriptDialogOpening*: HRESULT
-    AddPermissionRequested*: HRESULT
-    RemovePermissionRequested*: HRESULT
-    AddProcessFailed*: HRESULT
-    RemoveProcessFailed*: HRESULT
+    add_ContainsFullScreenElementChanged*: proc(): HRESULT {.stdcall.}
+    add_ContentLoading*: proc(): HRESULT {.stdcall.}
+    add_DocumentTitleChanged*: proc(): HRESULT {.stdcall.}
+    add_FrameNavigationCompleted*: proc(): HRESULT {.stdcall.}
+    add_FrameNavigationStarting*: proc(): HRESULT {.stdcall.}
+    add_HistoryChanged*: proc(): HRESULT {.stdcall.}
+    add_NavigationCompleted*: proc(): HRESULT {.stdcall.}
+    add_NavigationStarting*: proc(): HRESULT {.stdcall.}
+    add_NewWindowRequested*: proc(): HRESULT {.stdcall.}
+    add_PermissionRequested*: proc(): HRESULT {.stdcall.}
+    add_ProcessFailed*: proc(): HRESULT {.stdcall.}
+    add_ScriptDialogOpening*: proc(): HRESULT {.stdcall.}
+    add_SourceChanged*: proc(): HRESULT {.stdcall.}
+    add_WebMessageReceived*: proc(): HRESULT {.stdcall.}
+    add_WebResourceRequested*: proc(): HRESULT {.stdcall.}
+    add_WindowCloseRequested*: proc(): HRESULT {.stdcall.}
+    AddHostObjectToScript*: proc(): HRESULT {.stdcall.}
     AddScriptToExecuteOnDocumentCreated * : proc (self: ICoreWebView2;
         javaScript: LPCWSTR;
         handler: ptr ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler): HRESULT {.stdcall.}
-    RemoveScriptToExecuteOnDocumentCreated * : HRESULT
+    AddWebResourceRequestedFilter*: proc(): HRESULT {.stdcall.}
+    CallDevToolsProtocolMethod*: proc(): HRESULT {.stdcall.}
+    CapturePreview*: proc(): HRESULT {.stdcall.}
     ExecuteScript*: proc (self: ptr ICoreWebView2; javaScript: LPCWSTR;
         handler: ptr ICoreWebView2ExecuteScriptCompletedHandler): HRESULT {.stdcall.}
-    CapturePreview*: HRESULT
-    Reload*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
-    PostWebMessageAsJSON*: HRESULT
-    PostWebMessageAsString*: HRESULT
-    AddWebMessageReceived*: HRESULT
-    RemoveWebMessageReceived*: HRESULT
-    CallDevToolsProtocolMethod*: HRESULT
-    GetBrowserProcessID*: HRESULT
-    GetCanGoBack*: HRESULT
-    GetCanGoForward*: HRESULT
+    get_BrowserProcessId*: proc(): HRESULT {.stdcall.}
+    get_CanGoBack*: proc(): HRESULT {.stdcall.}
+    get_CanGoForward*: proc(): HRESULT {.stdcall.}
+    get_ContainsFullScreenElement*: proc(): HRESULT {.stdcall.}
+    get_DocumentTitle*: proc (self: ptr ICoreWebView2; title: LPWSTR): HRESULT {.stdcall.}
+    get_Settings*: proc (self: ptr ICoreWebView2;
+        settings: ptr ICoreWebView2Settings): HRESULT {.stdcall.}
+    get_Source*: proc(): HRESULT {.stdcall.}
+    GetDevToolsProtocolEventReceiver*: proc(): HRESULT {.stdcall.}
     GoBack*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
     GoForward*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
-    GetDevToolsProtocolEventReceiver*: HRESULT
-    Stop*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
-    AddNewWindowRequested*: HRESULT
-    RemoveNewWindowRequested*: HRESULT
-    AddDocumentTitleChanged*: HRESULT
-    RemoveDocumentTitleChanged*: HRESULT
-    GetDocumentTitle*: proc (self: ptr ICoreWebView2; title: LPWSTR): HRESULT {.stdcall.}
-    AddHostObjectToScript*: HRESULT
-    RemoveHostObjectFromScript*: HRESULT
+    Navigate*: proc (self: ptr ICoreWebView2; url: LPCWSTR): HRESULT {.stdcall.}
+    NavigateToString*: proc (self: ptr ICoreWebView2;
+        html_content: LPCWSTR): HRESULT {.stdcall.}
     OpenDevToolsWindow*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
-    AddContainsFullScreenElementChanged * : HRESULT
-    RemoveContainsFullScreenElementChanged * : HRESULT
-    GetContainsFullScreenElement*: HRESULT
-    AddWebResourceRequested*: HRESULT
-    RemoveWebResourceRequested*: HRESULT
-    AddWebResourceRequestedFilter*: HRESULT
-    RemoveWebResourceRequestedFilter*: HRESULT
-    AddWindowCloseRequested*: HRESULT
-    RemoveWindowCloseRequested*: HRESULT
+    PostWebMessageAsJson*: proc(): HRESULT {.stdcall.}
+    PostWebMessageAsString*: proc(): HRESULT {.stdcall.}
+    Reload*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
+    remove_ContainsFullScreenElementChanged*: proc(): HRESULT {.stdcall.}
+    remove_ContentLoading*: proc(): HRESULT {.stdcall.}
+    remove_DocumentTitleChanged*: proc(): HRESULT {.stdcall.}
+    remove_FrameNavigationCompleted*: proc(): HRESULT {.stdcall.}
+    remove_FrameNavigationStarting*: proc(): HRESULT {.stdcall.}
+    remove_HistoryChanged*: proc(): HRESULT {.stdcall.}
+    remove_NavigationCompleted*: proc(): HRESULT {.stdcall.}
+    remove_NavigationStarting*: proc(): HRESULT {.stdcall.}
+    remove_NewWindowRequested*: proc(): HRESULT {.stdcall.}
+    remove_PermissionRequested*: proc(): HRESULT {.stdcall.}
+    remove_ProcessFailed*: proc(): HRESULT {.stdcall.}
+    remove_ScriptDialogOpening*: proc(): HRESULT {.stdcall.}
+    remove_SourceChanged*: proc(): HRESULT {.stdcall.}
+    remove_WebMessageReceived*: proc(): HRESULT {.stdcall.}
+    remove_WebResourceRequested*: proc(): HRESULT {.stdcall.}
+    remove_WindowCloseRequested*: proc(): HRESULT {.stdcall.}
+    RemoveHostObjectFromScript*: proc(): HRESULT {.stdcall.}
+    RemoveScriptToExecuteOnDocumentCreated*: proc(): HRESULT {.stdcall.}
+    RemoveWebResourceRequestedFilter*: proc(): HRESULT {.stdcall.}
+    Stop*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
+
   ICoreWebView2Environment* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentVTBL
 
@@ -153,9 +155,10 @@ type
     # ICoreWebView2Controller2
     get_DefaultBackgroundColor*: proc (): HRESULT {.stdcall.}
     put_DefaultBackgroundColor*: proc (): HRESULT {.stdcall.}
+
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
-    # refCount*: ULONG
+
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* {.pure, inheritable.} = object
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
