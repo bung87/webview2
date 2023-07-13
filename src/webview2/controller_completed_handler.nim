@@ -23,7 +23,9 @@ proc Invoke*(self;
   if S_OK != hr:
     return hr
   echo "GetCoreWebView2"
+
   echo repr view
+  echo repr view[].lpVtbl.Navigate
   discard view[].lpVtbl.Navigate(view[], L"about:blank")
   return S_OK
 
