@@ -4,7 +4,7 @@ import winim
 type
   ICoreWebView2EnvironmentOptions* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentOptionsVTBL
-    # refCount*: ULONG
+
   ICoreWebView2EnvironmentOptionsVTBL* {.pure.} = object
     QueryInterface*: proc(self: ptr ICoreWebView2EnvironmentOptions;
         riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
@@ -103,6 +103,7 @@ type
     RemoveWindowCloseRequested*: HRESULT
   ICoreWebView2Environment* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentVTBL
+
   ICoreWebView2EnvironmentVTBL* = object of IUnknownVtbl
     CreateCoreWebView2Controller*: proc (self: ptr ICoreWebView2Environment;
         parentWindow: HWND;
@@ -166,7 +167,7 @@ type
       errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
-    # refCount*: ULONG
+
   ICoreWebView2ExecuteScriptCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2ExecuteScriptCompletedHandlerVTBL
   ICoreWebView2AddScriptToExecuteOnDocumentCreatedCompletedHandler* {.pure.} = object

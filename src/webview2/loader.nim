@@ -3,7 +3,7 @@ import com
 import std/[os, strscans]
 from winlean import useWinUnicode
 
-{.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
+# {.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
 
 type PACKAGE_VERSION {.pure.} = object
   Version:UINT64
