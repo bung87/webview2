@@ -24,7 +24,6 @@ proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2Control
 
 proc newEnvironmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   result = create(type result[])
-  # var cHandler {.global.} = newControllerCompletedHandler()
   result.lpVtbl = create(ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL)
   result.lpVtbl.QueryInterface = environment_completed_handler.QueryInterface
   result.lpVtbl.AddRef = environment_completed_handler.AddRef
@@ -81,16 +80,6 @@ proc embed*(b: Browser; wv: WebView) =
     break
   TranslateMessage(msg.addr)
   DispatchMessage(msg.addr)
-  # var settings = create(ICoreWebView2Settings)
-  # settings.lpVtbl = create(ICoreWebView2SettingsVTBL)
-  # echo repr globals.view
-  # echo repr globals.view.lpVtbl.GetSettings
-  # # echo repr globals.view[]
-  # # echo repr settings
-  # let r = globals.view.lpVtbl.GetSettings(globals.view[], settings)
-  # doAssert r == S_OK, "failed to get webview settings"
-
-  # b.settings = settings
 
 proc navigate*(b: Browser; url: string) =
   discard globals.view.lpVtbl.Navigate(globals.view[], L(url))

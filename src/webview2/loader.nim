@@ -1,7 +1,6 @@
 import winim
 import com
 import std/[os, strscans]
-from winlean import useWinUnicode
 
 # {.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
 
@@ -105,27 +104,21 @@ proc FindInstalledClientDllForChannel(lpSubKey: string; system: bool;
     clientPath: var string; version: var array[4, int]): bool =
   var phkResult: HKEY
   var cbPath: int32 = MAX_PATH
-
-  when useWinUnicode:
-    var buffer: WideCString
-    unsafeNew(buffer, cbPath + sizeof(Utf16Char))
-    buffer[cbPath div sizeof(Utf16Char) - 1] = Utf16Char(0)
-  else:
-    var buffer: CString
-    unsafeNew(buffer, cbPath + 1)
-    buffer[cbPath - 1] = 0
+  var buffer = T(when not winimAnsi: MAX_PATH div sizeof(Utf16Char) - 1 else: MAX_PATH - 1)
 
   if RegOpenKeyExW(if system: HKEY_LOCAL_MACHINE else: HKEY_CURRENT_USER, lpSubKey,
                       0, KEY_READ or KEY_WOW64_32KEY, &phkResult) != ERROR_SUCCESS:
     return false
 
   let r = RegQueryValueEx(phkResult, L"EBWebView", nil, nil, cast[LPBYTE](
-      buffer[0].addr), &cbPath)
+      &buffer), &cbPath)
 
   RegCloseKey(phkResult)
   if r != ERROR_SUCCESS:
     return false
+  buffer.setLen(cbPath div sizeof(Utf16Char) - 1)
   clientPath = $buffer
+
   let versionPart = lastPathPart clientPath
   if not scanf(versionPart, "$i.$i.$i.$i", version[0], version[1], version[2],
       version[3]):
