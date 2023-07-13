@@ -12,22 +12,15 @@ proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdc
     return E_NOINTERFACE
   if riid[] == GUID or riid[] == IID_IUnknown:
     ppvObject[] = self
-    # discard cast[ptr IUnknown](self.lpVtbl).AddRef(self)
     return S_OK
   else:
     ppvObject[] = nil
     return E_NOINTERFACE
 
 proc AddRef*(self): ULONG {.stdcall.} =
-  # inc self.refCount
-  return 1 #self.refCount
+  return 1
 
 proc Release*(self): ULONG {.stdcall.} =
-  # if self.refCount > 1:
-  #   dec self.refCount
-  #   return self.refCount
-
-  # dealloc self
   return 0
 
 proc get_AdditionalBrowserArguments*(self;value: ptr LPWSTR): HRESULT {.stdcall.} =
@@ -67,10 +60,10 @@ proc put_AllowSingleSignOnUsingOSPrimaryAccount*(self;allow: BOOL ): HRESULT {.s
   # self.lpVtbl.AllowSingleSignOnUsingOSPrimaryAccount = allow
   return S_OK
 
-# proc get_ExclusiveUserDataFolderAccess*(self;value:ptr BOOL): HRESULT {.stdcall.} =
-#   value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
-#   return S_OK
+proc get_ExclusiveUserDataFolderAccess*(self;value:ptr BOOL): HRESULT {.stdcall.} =
+  # value[] = self.lpVtbl.ExclusiveUserDataFolderAccess
+  return S_OK
 
-# proc put_ExclusiveUserDataFolderAccess*(self;value: BOOL): HRESULT {.stdcall.} =
-#   self.lpVtbl.ExclusiveUserDataFolderAccess = value
-#   return S_OK
+proc put_ExclusiveUserDataFolderAccess*(self;value: BOOL): HRESULT {.stdcall.} =
+  # self.lpVtbl.ExclusiveUserDataFolderAccess = value
+  return S_OK

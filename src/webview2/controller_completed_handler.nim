@@ -12,48 +12,22 @@ using
 proc Invoke*(self;
     errorCode: HRESULT;
     createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
-  # discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
-  let e = createdController.lpVtbl.QueryInterface(cast[ptr IUnknown](createdController), 
-    GUID.unsafeAddr,
-    cast[ptr pointer](controller.addr))
+  echo "ICoreWebView2CreateCoreWebView2ControllerCompletedHandler.Invoke"
+  if errorCode != S_OK:
+    return errorCode
+  let e = createdController.lpVtbl.QueryInterface(cast[ptr IUnknown](createdController), IID_ICoreWebView2Controller2.unsafeAddr, cast[ptr pointer](controller.addr))
   if e != S_OK:
     return e
-  let hr = createdController.lpVtbl.GetCoreWebView2(createdController,view.addr)
+  let hr = createdController.lpVtbl.GetCoreWebView2(createdController, view.addr)
   if S_OK != hr:
     return hr
-
-  # cast[ptr ControllerCompletedHandlerVTBL](
-  #   self.lpVtbl).controller = createdController
-
-  # discard cast[ptr ControllerCompletedHandlerVTBL](
-  #   self.lpVtbl).view.lpVtbl.AddRef(cast[ptr IUnknown](cast[
-  #   ptr ControllerCompletedHandlerVTBL](self.lpVtbl).view))
-  # wv.browser.controllerCompleted.store(1)
+  echo "GetCoreWebView2"
   return S_OK
 
-# proc AddRef*(self): ULONG {.stdcall.} =
-#   inc self.refCount
-#   return self.refCount
-
-# proc Release*(self): ULONG {.stdcall.} =
-#   if self.refCount > 1:
-#     dec self.refCount
-#     return self.refCount
-
-#   dealloc self
-#   return 0
-
-
 proc AddRef*(self): ULONG {.stdcall.} =
-  # inc self.refCount
-  return 1# self.refCount
+  return 1
 
 proc Release*(self): ULONG {.stdcall.} =
-  # if self.refCount > 1:
-  #   dec self.refCount
-  #   return self.refCount
-
-  # dealloc self
   return 0
 
 proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
@@ -61,7 +35,6 @@ proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdc
     return E_NOINTERFACE
   if riid[] == GUID or riid[] == IID_IUnknown:
     ppvObject[] = self
-    # discard self.lpVtbl.AddRef(self)
     return S_OK
   else:
     ppvObject[] = nil

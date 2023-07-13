@@ -19,7 +19,7 @@ type
     config*: BrowserConfig
     view*: ptr ICoreWebView2
     controller*: ptr ICoreWebView2Controller
-    settings*: ICoreWebView2Settings
+    settings*: ptr ICoreWebView2Settings
     # controllerCompleted*:  Atomic[int32]
   Browser* = ref BrowserObj
 

@@ -127,7 +127,6 @@ proc FindInstalledClientDllForChannel(lpSubKey: string; system: bool;
     return false
   clientPath = $buffer
   let versionPart = lastPathPart clientPath
-
   if not scanf(versionPart, "$i.$i.$i.$i", version[0], version[1], version[2],
       version[3]):
     return false

@@ -8,30 +8,29 @@ from environment_options import nil
 import std/[os, atomics,pathnorm]
 import loader
 from globals import nil
-const GUID = DEFINE_GUID"6C4819F3-C9B7-4260-8127-C9F5BDE7F68C"
+
 using
   self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
 
 proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = create(type result[])
-  var vtbl = ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL()
+  var vtbl = create(ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL)
   vtbl.QueryInterface = controller_completed_handler.QueryInterface
   vtbl.AddRef = controller_completed_handler.AddRef
   vtbl.Release = controller_completed_handler.Release
   vtbl.Invoke = controller_completed_handler.Invoke
-  result.lpVtbl = vtbl.addr
+  result.lpVtbl = vtbl
 
 
 proc newEnvironmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   result = create(type result[])
   # var cHandler {.global.} = newControllerCompletedHandler()
-  var vtbl = ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL()
-  vtbl.QueryInterface = environment_completed_handler.QueryInterface
-  vtbl.AddRef = environment_completed_handler.AddRef
-  vtbl.Release = environment_completed_handler.Release
-  vtbl.Invoke = environment_completed_handler.Invoke
-  # vtbl.controllerCompletedHandler = cHandler
-  result.lpVtbl = vtbl.addr
+  result.lpVtbl = create(ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL)
+  result.lpVtbl.QueryInterface = environment_completed_handler.QueryInterface
+  result.lpVtbl.AddRef = environment_completed_handler.AddRef
+  result.lpVtbl.Release = environment_completed_handler.Release
+  result.lpVtbl.Invoke = environment_completed_handler.Invoke
+
 
 proc resize*(b: Browser, hwnd: HWND) =
   var bounds: RECT
@@ -54,11 +53,10 @@ proc embed*(b: Browser; wv: WebView) =
   # CoTaskMemFree(versionInfo)
   globals.winHandle = wv.window[].handle
   var environmentCompletedHandler {.global.} = newEnvironmentCompletedHandler()
-  globals.controllerCompletedHandler = newControllerCompletedHandler()
-  echo repr globals.controllerCompletedHandler
-  # cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).handle = wv.window[].handle
+  globals.controllerCompletedHandler[] = newControllerCompletedHandler()[]
+
   var options = create(ICoreWebView2EnvironmentOptions)
-  var vtbl = ICoreWebView2EnvironmentOptionsVTBL()
+  var vtbl = create(ICoreWebView2EnvironmentOptionsVTBL)
   vtbl.QueryInterface = environment_options.QueryInterface
   vtbl.AddRef = environment_options.AddRef
   vtbl.Release = environment_options.Release
@@ -70,11 +68,10 @@ proc embed*(b: Browser; wv: WebView) =
   vtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
   vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.get_AllowSingleSignOnUsingOSPrimaryAccount
   vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.put_AllowSingleSignOnUsingOSPrimaryAccount
-  # vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
-  # vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
+  vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
+  vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
   
-  options.lpVtbl = vtbl.addr
-  # echo repr cast[ptr EnvironmentCompletedHandlerVTBL](environmentCompletedHandler.lpVtbl).controllerCompletedHandler
+  options.lpVtbl = vtbl
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)
   # let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
 
@@ -84,22 +81,27 @@ proc embed*(b: Browser; wv: WebView) =
     break
   TranslateMessage(msg.addr)
   DispatchMessage(msg.addr)
-  var settings: ICoreWebView2Settings
-  let r = b.view.lpVtbl.GetSettings(b.view[], settings.addr)
-  doAssert r == S_OK, "failed to get webview settings"
+  # var settings = create(ICoreWebView2Settings)
+  # settings.lpVtbl = create(ICoreWebView2SettingsVTBL)
+  # echo repr globals.view
+  # echo repr globals.view.lpVtbl.GetSettings
+  # # echo repr globals.view[]
+  # # echo repr settings
+  # let r = globals.view.lpVtbl.GetSettings(globals.view[], settings)
+  # doAssert r == S_OK, "failed to get webview settings"
 
-  b.settings = settings
+  # b.settings = settings
 
 proc navigate*(b: Browser; url: string) =
-  discard b.view.lpVtbl.Navigate(b.view[], L(url))
+  discard globals.view.lpVtbl.Navigate(globals.view[], L(url))
 
 
 proc AddScriptToExecuteOnDocumentCreated*(b: Browser; script: string) =
-  discard b.view.lpVtbl.AddScriptToExecuteOnDocumentCreated(b.view[],
+  discard globals.view.lpVtbl.AddScriptToExecuteOnDocumentCreated(globals.view[],
       newWideCString(script), NUll)
 
 proc ExecuteScript*(b: Browser; script: string) =
-  discard b.view.lpVtbl.ExecuteScript(b.view[], newWideCString(script), NUll)
+  discard globals.view.lpVtbl.ExecuteScript(globals.view[], newWideCString(script), NUll)
 
 # proc saveSetting*(b: Browser;setter:pointer; enabled: bool) =
 #   var flag:clong = 0

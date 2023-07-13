@@ -11,19 +11,18 @@ using
 proc Invoke*(self;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    return createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
+    echo "ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler.Invoke"
+    if errorCode != S_OK:
+      return errorCode
+    let hr = createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
         createdEnvironment, winHandle, controllerCompletedHandler)
+    assert hr == S_OK
+    return hr
 
 proc AddRef*(self): ULONG {.stdcall.} =
-  # inc self.refCount
-  return 1# self.refCount
+  return 1
 
 proc Release*(self): ULONG {.stdcall.} =
-  # if self.refCount > 1:
-  #   dec self.refCount
-  #   return self.refCount
-
-  # dealloc self
   return 0
 
 proc QueryInterface*(self; riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.} =
