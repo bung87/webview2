@@ -118,40 +118,41 @@ type
   ICoreWebView2Controller* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2ControllerVTBL
   ICoreWebView2ControllerVTBL* = object of IUnknownVtbl
-    GetIsVisible*: proc (self: ptr ICoreWebView2Controller;
-        is_visible: ptr bool): HRESULT {.stdcall.}
-    PutIsVisible*: proc (self: ptr ICoreWebView2Controller;
-        is_visible: bool): HRESULT {.stdcall.}
-    GetBounds*: proc (self: ptr ICoreWebView2Controller;
+    add_AcceleratorKeyPressed*: proc (): HRESULT {.stdcall.}
+    add_GotFocus*: proc (): HRESULT {.stdcall.}
+    add_LostFocus*: proc (): HRESULT {.stdcall.}
+    add_MoveFocusRequested*: proc (): HRESULT {.stdcall.}
+    add_ZoomFactorChanged*: proc (): HRESULT {.stdcall.}
+    Close*: proc (self: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
+    get_Bounds*: proc (self: ptr ICoreWebView2Controller;
         bounds: ptr RECT): HRESULT {.stdcall.}
-    PutBounds*: proc (self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT
-    GetZoomFactor*: proc (self: ptr ICoreWebView2Controller;
-        factor: ptr float64): HRESULT {.stdcall.}
-    PutZoomFactor*: proc (self: ptr ICoreWebView2Controller;
-        factor: float64): HRESULT {.stdcall.}
-    AddZoomFactorChanged*: HRESULT
-    RemoveZoomFactorChanged*: HRESULT
-    SetBoundsAndZoomFactor*: HRESULT
-    MoveFocus*: HRESULT
-    AddMoveFocusRequested*: HRESULT
-    RemoveMoveFocusRequested*: HRESULT
-    AddGotFocus*: HRESULT
-    RemoveGotFocus*: HRESULT
-    AddLostFocus*: HRESULT
-    RemoveLostFocus*: HRESULT
-    AddAcceleratorKeyPressed*: HRESULT
-    RemoveAcceleratorKeyPressed*: HRESULT
-    GetParentWindow*: proc (self: ptr ICoreWebView2Controller;
+    get_CoreWebView2*: proc (self: ptr ICoreWebView2Controller;
+        coreWebView2: ptr ptr ICoreWebView2): HRESULT {.stdcall.}
+    get_IsVisible*: proc (self: ptr ICoreWebView2Controller;
+        is_visible: ptr bool): HRESULT {.stdcall.}
+    get_ParentWindow*: proc (self: ptr ICoreWebView2Controller;
         parent: ptr HWND): HRESULT {.stdcall.}
-    PutParentWindow*: proc (self: ptr ICoreWebView2Controller;
-        parent: HWND): HRESULT {.stdcall.}
+    get_ZoomFactor*: proc (self: ptr ICoreWebView2Controller;
+        factor: ptr float64): HRESULT {.stdcall.}
+    MoveFocus*: proc (): HRESULT {.stdcall.}
     NotifyParentWindowPositionChanged*: proc (
         self: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
-    Close*: proc (self: ptr ICoreWebView2Controller): HRESULT {.stdcall.}
-    GetCoreWebView2*: proc (self: ptr ICoreWebView2Controller;
-        coreWebView2: ptr ptr ICoreWebView2): HRESULT {.stdcall.}
-    GetDefaultBackgroundColor*: HRESULT
-    PutDefaultBackgroundColor*: HRESULT
+    put_Bounds*: proc (self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT
+    put_IsVisible*: proc (self: ptr ICoreWebView2Controller;
+        is_visible: bool): HRESULT {.stdcall.}
+    put_ParentWindow*: proc (self: ptr ICoreWebView2Controller;
+        parent: HWND): HRESULT {.stdcall.}
+    put_ZoomFactor*: proc (self: ptr ICoreWebView2Controller;
+        factor: float64): HRESULT {.stdcall.}
+    remove_AcceleratorKeyPressed*: proc (): HRESULT {.stdcall.}
+    remove_GotFocus*: proc (): HRESULT {.stdcall.}
+    remove_LostFocus*: proc (): HRESULT {.stdcall.}
+    remove_MoveFocusRequested*: proc (): HRESULT {.stdcall.}
+    remove_ZoomFactorChanged*: proc (): HRESULT {.stdcall.}
+    SetBoundsAndZoomFactor*: proc (): HRESULT {.stdcall.}
+    # ICoreWebView2Controller2
+    get_DefaultBackgroundColor*: proc (): HRESULT {.stdcall.}
+    put_DefaultBackgroundColor*: proc (): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
     # refCount*: ULONG

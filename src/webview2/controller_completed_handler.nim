@@ -19,12 +19,12 @@ proc Invoke*(self;
   if e != S_OK:
     return e
 
-  let hr = createdController.lpVtbl.GetCoreWebView2(createdController, view.addr)
+  let hr = createdController.lpVtbl.get_CoreWebView2(createdController, view.addr)
   if S_OK != hr:
     return hr
   echo "GetCoreWebView2"
   echo repr view
-  discard view.lpVtbl.Navigate(view[], L"about:blank")
+  discard view[].lpVtbl.Navigate(view[], L"about:blank")
   return S_OK
 
 proc AddRef*(self): ULONG {.stdcall.} =

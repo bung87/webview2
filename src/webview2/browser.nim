@@ -36,7 +36,7 @@ proc resize*(b: Browser, hwnd: HWND) =
   let g = GetClientRect(hwnd, bounds)
   doAssert g == TRUE, $GetLastError()
   doAssert b.controller != nil
-  discard b.controller.lpVtbl.PutBounds(b.controller, bounds)
+  discard b.controller.lpVtbl.put_Bounds(b.controller, bounds)
 
 proc embed*(b: Browser; wv: WebView) =
   b.hwnd = wv.window[].handle
