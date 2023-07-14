@@ -1,6 +1,5 @@
 import winim
 import com
-import types
 import globals
 
 const GUID = DEFINE_GUID"6C4819F3-C9B7-4260-8127-C9F5BDE7F68C"

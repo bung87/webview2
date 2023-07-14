@@ -1,6 +1,6 @@
 import winim
 import com
-import std/[atomics]
+# import std/[atomics]
 
 type 
   BrowserConfig* = object

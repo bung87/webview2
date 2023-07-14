@@ -148,7 +148,7 @@ proc CreateWebViewEnvironmentWithClientDll(lpLibFileName: string; unknown: bool;
     return HRESULT_FROM_WIN32(GetLastError())
 
   let createWebViewEnvironmentWithOptionsInternalProc = cast[CreateWebViewEnvironmentWithOptionsInternal](createProcAddr)
-  var wStr = L(userDataDir)
+  var wStr = +$(userDataDir)
   let hr = createWebViewEnvironmentWithOptionsInternalProc(true, runtimeType, wStr, environmentOptions, envCompletedHandler)
   if canUnloadProc != nil and SUCCEEDED(cast[DllCanUnloadNow](canUnloadProc)()):
     FreeLibrary(clientDll)
