@@ -15,15 +15,18 @@ proc Invoke*(self;
   echo "ICoreWebView2CreateCoreWebView2ControllerCompletedHandler.Invoke"
   if errorCode != S_OK:
     return errorCode
+  # discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
   let e = createdController.lpVtbl.QueryInterface(cast[ptr IUnknown](createdController), IID_ICoreWebView2Controller2.unsafeAddr, cast[ptr pointer](controller.addr))
   if e != S_OK:
     return e
 
-  let hr = createdController.lpVtbl.get_CoreWebView2(createdController, view.addr)
+  var ppv: ptr ptr ICoreWebView2
+  let hr = createdController.lpVtbl.get_CoreWebView2(createdController, ppv)
+  # discard createdController.lpVtbl.Release(cast[ptr IUnknown](createdController))
   if S_OK != hr:
     return hr
   echo "GetCoreWebView2"
-
+  view = ppv[]
   echo repr view
   echo repr view[].lpVtbl.Navigate
   discard view[].lpVtbl.Navigate(view[], L"about:blank")
