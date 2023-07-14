@@ -14,13 +14,11 @@ using
 
 proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = create(type result[])
-  var vtbl = create(ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL)
-  vtbl.QueryInterface = controller_completed_handler.QueryInterface
-  vtbl.AddRef = controller_completed_handler.AddRef
-  vtbl.Release = controller_completed_handler.Release
-  vtbl.Invoke = controller_completed_handler.Invoke
-  result.lpVtbl = vtbl
-
+  result.lpVtbl = create(ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL)
+  result.lpVtbl.QueryInterface = controller_completed_handler.QueryInterface
+  result.lpVtbl.AddRef = controller_completed_handler.AddRef
+  result.lpVtbl.Release = controller_completed_handler.Release
+  result.lpVtbl.Invoke = controller_completed_handler.Invoke
 
 proc newEnvironmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   result = create(type result[])
@@ -29,7 +27,6 @@ proc newEnvironmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2Envir
   result.lpVtbl.AddRef = environment_completed_handler.AddRef
   result.lpVtbl.Release = environment_completed_handler.Release
   result.lpVtbl.Invoke = environment_completed_handler.Invoke
-
 
 proc resize*(b: Browser, hwnd: HWND) =
   var bounds: RECT
@@ -55,22 +52,21 @@ proc embed*(b: Browser; wv: WebView) =
   globals.controllerCompletedHandler = newControllerCompletedHandler()
 
   var options = create(ICoreWebView2EnvironmentOptions)
-  var vtbl = create(ICoreWebView2EnvironmentOptionsVTBL)
-  vtbl.QueryInterface = environment_options.QueryInterface
-  vtbl.AddRef = environment_options.AddRef
-  vtbl.Release = environment_options.Release
-  vtbl.get_AdditionalBrowserArguments = environment_options.get_AdditionalBrowserArguments
-  vtbl.put_AdditionalBrowserArguments = environment_options.put_AdditionalBrowserArguments
-  vtbl.get_Language = environment_options.get_Language
-  vtbl.put_Language = environment_options.put_Language
-  vtbl.get_TargetCompatibleBrowserVersion = environment_options.get_TargetCompatibleBrowserVersion
-  vtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
-  vtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.get_AllowSingleSignOnUsingOSPrimaryAccount
-  vtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.put_AllowSingleSignOnUsingOSPrimaryAccount
-  vtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
-  vtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
-  
-  options.lpVtbl = vtbl
+  options.lpVtbl = create(ICoreWebView2EnvironmentOptionsVTBL)
+  options.lpVtbl.QueryInterface = environment_options.QueryInterface
+  options.lpVtbl.AddRef = environment_options.AddRef
+  options.lpVtbl.Release = environment_options.Release
+  options.lpVtbl.get_AdditionalBrowserArguments = environment_options.get_AdditionalBrowserArguments
+  options.lpVtbl.put_AdditionalBrowserArguments = environment_options.put_AdditionalBrowserArguments
+  options.lpVtbl.get_Language = environment_options.get_Language
+  options.lpVtbl.put_Language = environment_options.put_Language
+  options.lpVtbl.get_TargetCompatibleBrowserVersion = environment_options.get_TargetCompatibleBrowserVersion
+  options.lpVtbl.put_TargetCompatibleBrowserVersion = environment_options.put_TargetCompatibleBrowserVersion
+  options.lpVtbl.get_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.get_AllowSingleSignOnUsingOSPrimaryAccount
+  options.lpVtbl.put_AllowSingleSignOnUsingOSPrimaryAccount = environment_options.put_AllowSingleSignOnUsingOSPrimaryAccount
+  options.lpVtbl.get_ExclusiveUserDataFolderAccess = environment_options.get_ExclusiveUserDataFolderAccess
+  options.lpVtbl.put_ExclusiveUserDataFolderAccess = environment_options.put_ExclusiveUserDataFolderAccess
+
   let r1 = CreateCoreWebView2EnvironmentWithOptions("", dataPath, options, environmentCompletedHandler)
   # let folder = "C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application\\104.0.1293.70"
 
@@ -82,7 +78,7 @@ proc embed*(b: Browser; wv: WebView) =
   DispatchMessage(msg.addr)
 
 proc navigate*(b: Browser; url: string) =
-  discard globals.view.lpVtbl.Navigate(globals.view[], L(url))
+  discard globals.view.lpVtbl.Navigate(globals.view[], +$(url))
 
 
 proc AddScriptToExecuteOnDocumentCreated*(b: Browser; script: string) =
