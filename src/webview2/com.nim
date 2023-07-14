@@ -35,6 +35,16 @@ type
     # ICoreWebView2EnvironmentOptions2
     get_ExclusiveUserDataFolderAccess*: proc (self: ptr ICoreWebView2EnvironmentOptions;value: ptr BOOL): HRESULT {.stdcall.}
     put_ExclusiveUserDataFolderAccess*: proc (self: ptr ICoreWebView2EnvironmentOptions;value: BOOL): HRESULT {.stdcall.}
+    # ICoreWebView2EnvironmentOptions3
+    get_IsCustomCrashReportingEnabled*: proc(): HRESULT {.stdcall.}
+    put_IsCustomCrashReportingEnabled*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2EnvironmentOptions4
+    GetCustomSchemeRegistrations*: proc(): HRESULT {.stdcall.}
+    SetCustomSchemeRegistrations*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2EnvironmentOptions5
+    get_EnableTrackingPrevention*: proc(): HRESULT {.stdcall.}
+    put_EnableTrackingPrevention*: proc(): HRESULT {.stdcall.}
+
   # https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.1823.32
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
@@ -102,6 +112,84 @@ type
     RemoveScriptToExecuteOnDocumentCreated*: proc(): HRESULT {.stdcall.}
     RemoveWebResourceRequestedFilter*: proc(): HRESULT {.stdcall.}
     Stop*: proc (self: ptr ICoreWebView2): HRESULT {.stdcall.}
+    # ICoreWebView2_2
+    add_DOMContentLoaded*: proc(): HRESULT {.stdcall.}
+    add_WebResourceResponseReceived*: proc(): HRESULT {.stdcall.}
+    get_CookieManager*: proc(): HRESULT {.stdcall.}
+    get_Environment*: proc(): HRESULT {.stdcall.}
+    NavigateWithWebResourceRequest*: proc(): HRESULT {.stdcall.}
+    remove_DOMContentLoaded*: proc(): HRESULT {.stdcall.}
+    remove_WebResourceResponseReceived*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_3
+    ClearVirtualHostNameToFolderMapping*: proc(): HRESULT {.stdcall.}
+    get_IsSuspended*: proc(): HRESULT {.stdcall.}
+    Resume*: proc(): HRESULT {.stdcall.}
+    SetVirtualHostNameToFolderMapping*: proc(): HRESULT {.stdcall.}
+    TrySuspend*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_4
+    add_DownloadStarting*: proc(): HRESULT {.stdcall.}
+    add_FrameCreated*: proc(): HRESULT {.stdcall.}
+    remove_DownloadStarting*: proc(): HRESULT {.stdcall.}
+    remove_FrameCreated*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_5
+    add_ClientCertificateRequested*: proc(): HRESULT {.stdcall.}
+    remove_ClientCertificateRequested*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_6
+    OpenTaskManagerWindow*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_7
+    PrintToPdf*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_8
+    add_IsDocumentPlayingAudioChanged*: proc(): HRESULT {.stdcall.}
+    add_IsMutedChanged*: proc(): HRESULT {.stdcall.}
+    get_IsDocumentPlayingAudio*: proc(): HRESULT {.stdcall.}
+    get_IsMuted*: proc(): HRESULT {.stdcall.}
+    put_IsMuted*: proc(): HRESULT {.stdcall.}
+    remove_IsDocumentPlayingAudioChanged*: proc(): HRESULT {.stdcall.}
+    remove_IsMutedChanged*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_9
+    add_IsDefaultDownloadDialogOpenChanged*: proc(): HRESULT {.stdcall.}
+    CloseDefaultDownloadDialog*: proc(): HRESULT {.stdcall.}
+    get_DefaultDownloadDialogCornerAlignment*: proc(): HRESULT {.stdcall.}
+    get_DefaultDownloadDialogMargin*: proc(): HRESULT {.stdcall.}
+    get_IsDefaultDownloadDialogOpen*: proc(): HRESULT {.stdcall.}
+    OpenDefaultDownloadDialog*: proc(): HRESULT {.stdcall.}
+    put_DefaultDownloadDialogCornerAlignment*: proc(): HRESULT {.stdcall.}
+    put_DefaultDownloadDialogMargin*: proc(): HRESULT {.stdcall.}
+    remove_IsDefaultDownloadDialogOpenChanged*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_10
+    add_BasicAuthenticationRequested*: proc(): HRESULT {.stdcall.}
+    remove_BasicAuthenticationRequested*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_11
+    add_ContextMenuRequested*: proc(): HRESULT {.stdcall.}
+    CallDevToolsProtocolMethodForSession*: proc(): HRESULT {.stdcall.}
+    remove_ContextMenuRequested*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_12
+    add_StatusBarTextChanged*: proc(): HRESULT {.stdcall.}
+    get_StatusBarText*: proc(): HRESULT {.stdcall.}
+    remove_StatusBarTextChanged*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_13
+    get_Profile*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_14
+    add_ServerCertificateErrorDetected*: proc(): HRESULT {.stdcall.}
+    ClearServerCertificateErrorActions*: proc(): HRESULT {.stdcall.}
+    remove_ServerCertificateErrorDetected*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_15
+    add_FaviconChanged*: proc(): HRESULT {.stdcall.}
+    get_FaviconUri*: proc(): HRESULT {.stdcall.}
+    GetFavicon*: proc(): HRESULT {.stdcall.}
+    remove_FaviconChanged*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_16
+    Print*: proc(): HRESULT {.stdcall.}
+    PrintToPdfStream*: proc(): HRESULT {.stdcall.}
+    ShowPrintUI*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_17
+    PostSharedBufferToScript*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_18
+    add_LaunchingExternalUriScheme*: proc(): HRESULT {.stdcall.}
+    remove_LaunchingExternalUriScheme*: proc(): HRESULT {.stdcall.}
+    # ICoreWebView2_19
+    get_MemoryUsageTargetLevel*: proc(): HRESULT {.stdcall.}
+    put_MemoryUsageTargetLevel*: proc(): HRESULT {.stdcall.}
 
   ICoreWebView2Environment* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentVTBL
@@ -155,6 +243,17 @@ type
     # ICoreWebView2Controller2
     get_DefaultBackgroundColor*: proc (): HRESULT {.stdcall.}
     put_DefaultBackgroundColor*: proc (): HRESULT {.stdcall.}
+    # ICoreWebView2Controller3
+    add_RasterizationScaleChanged*: proc (): HRESULT {.stdcall.}
+    get_BoundsMode*: proc (): HRESULT {.stdcall.}
+    get_RasterizationScale*: proc (): HRESULT {.stdcall.}
+    get_ShouldDetectMonitorScaleChanges*: proc (): HRESULT {.stdcall.}
+    put_BoundsMode*: proc (): HRESULT {.stdcall.}
+    put_RasterizationScale*: proc (): HRESULT {.stdcall.}
+    put_ShouldDetectMonitorScaleChanges*: proc (): HRESULT {.stdcall.}
+    # ICoreWebView2Controller4
+    get_AllowExternalDrop*: proc (): HRESULT {.stdcall.}
+    put_AllowExternalDrop*: proc (): HRESULT {.stdcall.}
 
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
