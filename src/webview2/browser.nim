@@ -52,7 +52,7 @@ proc embed*(b: Browser; wv: WebView) =
   # CoTaskMemFree(versionInfo)
   globals.winHandle = wv.window[].handle
   var environmentCompletedHandler {.global.} = newEnvironmentCompletedHandler()
-  globals.controllerCompletedHandler[] = newControllerCompletedHandler()[]
+  globals.controllerCompletedHandler = newControllerCompletedHandler()
 
   var options = create(ICoreWebView2EnvironmentOptions)
   var vtbl = create(ICoreWebView2EnvironmentOptionsVTBL)
