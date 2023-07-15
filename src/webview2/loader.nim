@@ -2,7 +2,7 @@ import winim
 import com
 import std/[os, strscans]
 
-# {.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
+{.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
 
 type PACKAGE_VERSION {.pure.} = object
   Version:UINT64

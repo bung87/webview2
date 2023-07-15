@@ -1,6 +1,5 @@
 import winim
 
-
 type
   ICoreWebView2EnvironmentOptions* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2EnvironmentOptionsVTBL
