@@ -16,6 +16,10 @@ proc Invoke*(self;
     return errorCode
   assert createdController != nil
   controller = createdController
+  var bounds: RECT
+  GetClientRect(winHandle, bounds)
+  discard controller.lpVtbl.put_Bounds(controller, bounds)
+  discard controller.lpVtbl.put_IsVisible(controller, true)
   let hr = controller.lpVtbl.get_CoreWebView2(controller, view.addr)
   discard view.lpVtbl.AddRef(view)
   if S_OK != hr:
@@ -26,9 +30,6 @@ proc Invoke*(self;
   discard settings.lpVtbl.PutIsScriptEnabled(settings, true)
   discard settings.lpVtbl.PutAreDefaultScriptDialogsEnabled(settings, true)
   discard settings.lpVtbl.PutIsWebMessageEnabled(settings, true)
-  var bounds: RECT
-  GetClientRect(winHandle, bounds)
-  discard controller.lpVtbl.put_Bounds(controller, bounds)
   discard view.lpVtbl.Navigate(view, L"https://baidu.com")
   return S_OK
 

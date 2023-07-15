@@ -1,4 +1,4 @@
-import webview2/[types,webview,browser,context]
+import webview2/[types,webview,browser,context,globals]
 import winim
 import winim/inc/winuser
 import winim/inc/mshtml
@@ -12,7 +12,7 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
 
     case msg
       of WM_SIZE:
-        if w.browser.controller != nil:
+        if controller != nil:
           w.browser.resize(hwnd)
       of WM_CLOSE:
         DestroyWindow(hwnd)
