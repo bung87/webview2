@@ -14,20 +14,29 @@ proc Invoke*(self;
   echo "ICoreWebView2CreateCoreWebView2ControllerCompletedHandler.Invoke"
   if errorCode != S_OK:
     return errorCode
-  # discard createdController.lpVtbl.AddRef(cast[ptr IUnknown](createdController))
-  # let e = createdController.lpVtbl.QueryInterface(cast[ptr IUnknown](createdController), IID_ICoreWebView2Controller2.unsafeAddr, cast[ptr pointer](controller.addr))
-  # if e != S_OK:
-  #   return e
-
-  let hr = createdController.lpVtbl.get_CoreWebView2(createdController, view.addr)
-  # discard createdController.lpVtbl.Release(cast[ptr IUnknown](createdController))
+  assert createdController != nil
+  controller = createdController
+  let hr = controller.lpVtbl.get_CoreWebView2(controller, view.addr)
+  # echo hr
+  discard view.lpVtbl.AddRef(view)
   if S_OK != hr:
     return hr
   echo "GetCoreWebView2"
   doAssert view != nil
-  echo repr view.lpVtbl
-  echo repr view[].lpVtbl.Navigate
-  discard view[].lpVtbl.Navigate(view[], L"about:blank")
+  var settings: ptr ICoreWebView2Settings
+  let hr1 = view.lpVtbl.get_Settings(view, settings.addr)
+  discard settings.lpVtbl.PutIsScriptEnabled(settings, true)
+  discard settings.lpVtbl.PutAreDefaultScriptDialogsEnabled(settings, true)
+  discard settings.lpVtbl.PutIsWebMessageEnabled(settings, true)
+  var bounds: RECT
+  GetClientRect(winHandle, bounds)
+  echo bounds
+  discard controller.lpVtbl.put_Bounds(controller, bounds)
+  var is_visible: bool
+  discard controller.lpVtbl.get_IsVisible(controller, is_visible.addr)
+  echo is_visible
+  # discard view.lpVtbl.Navigate(view, L"https://baidu.com")
+  echo "navigation"
   return S_OK
 
 proc AddRef*(self): ULONG {.stdcall.} =

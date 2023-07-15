@@ -47,9 +47,14 @@ type
   # https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.1823.32
   ICoreWebView2* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2VTBL
-  ICoreWebView2VTBL* = object of IUnknownVtbl
+  ICoreWebView2VTBL* = object
+    QueryInterface*: proc(self: ptr ICoreWebView2;
+        riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
+    AddRef*: proc (self: ptr ICoreWebView2): ULONG {.stdcall.}
+    Release*: proc (self: ptr ICoreWebView2): ULONG {.stdcall.}
+
     get_Settings*: proc (self: ptr ICoreWebView2;
-        settings: ptr ICoreWebView2Settings): HRESULT {.stdcall.}
+        settings: ptr ptr ICoreWebView2Settings): HRESULT {.stdcall.}
     get_Source*: proc(): HRESULT {.stdcall.}
     Navigate*: proc (self: ptr ICoreWebView2; url: LPCWSTR): HRESULT {.stdcall.}
     NavigateToString*: proc (self: ptr ICoreWebView2;
@@ -203,7 +208,7 @@ type
     AddNewBrowserVersionAvailable*: HRESULT
     RemoveNewBrowserVersionAvailable*: HRESULT
     # ICoreWebView2Environment7
-    get_UserDataFolder*: proc (self: ptr ICoreWebView2Environment;value: ptr LPWSTR): HRESULT
+    get_UserDataFolder*: proc (self: ptr ICoreWebView2Environment;value: ptr LPWSTR): HRESULT {.stdcall.}
   ICoreWebView2Controller* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2ControllerVTBL
   ICoreWebView2ControllerVTBL* = object of IUnknownVtbl
@@ -213,7 +218,7 @@ type
         is_visible: bool): HRESULT {.stdcall.}
     get_Bounds*: proc (self: ptr ICoreWebView2Controller;
         bounds: ptr RECT): HRESULT {.stdcall.}
-    put_Bounds*: proc (self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT
+    put_Bounds*: proc (self: ptr ICoreWebView2Controller; bounds: RECT): HRESULT {.stdcall.}
     get_ZoomFactor*: proc (self: ptr ICoreWebView2Controller;
         factor: ptr float64): HRESULT {.stdcall.}
     put_ZoomFactor*: proc (self: ptr ICoreWebView2Controller;
