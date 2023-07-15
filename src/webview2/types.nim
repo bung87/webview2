@@ -20,13 +20,8 @@ type
     webMessage*           :bool
     zoomControl*          :bool
   BrowserObj = object
-    # hwnd*: HWND
     ctx*: BrowserContext
     config*: BrowserConfig
-
-    # view*: ptr ICoreWebView2
-    # controller*: ptr ICoreWebView2Controller
-    # settings*: ptr ICoreWebView2Settings
     # controllerCompleted*:  Atomic[int32]
   Browser* = ref BrowserObj
 
