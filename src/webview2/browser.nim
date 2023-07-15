@@ -40,15 +40,13 @@ proc embed*(b: Browser; wv: WebView) =
   let exePath = getAppFilename()
   var (dir, name, ext) = splitFile(exePath)
   var dataPath = normalizePath(getEnv("AppData") / name)
-  # var dataPath = getTempDir()  / name
-  echo dataPath
   createDir(dataPath)
   # var versionInfo: LPWSTR
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
   globals.winHandle = wv.window[].handle
-  var environmentCompletedHandler {.global.} = newEnvironmentCompletedHandler()
+  var environmentCompletedHandler = newEnvironmentCompletedHandler()
   globals.controllerCompletedHandler = newControllerCompletedHandler()
 
   var options = create(ICoreWebView2EnvironmentOptions)

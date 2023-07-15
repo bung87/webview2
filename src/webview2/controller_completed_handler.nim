@@ -17,11 +17,9 @@ proc Invoke*(self;
   assert createdController != nil
   controller = createdController
   let hr = controller.lpVtbl.get_CoreWebView2(controller, view.addr)
-  # echo hr
   discard view.lpVtbl.AddRef(view)
   if S_OK != hr:
     return hr
-  echo "GetCoreWebView2"
   doAssert view != nil
   var settings: ptr ICoreWebView2Settings
   let hr1 = view.lpVtbl.get_Settings(view, settings.addr)
@@ -30,13 +28,8 @@ proc Invoke*(self;
   discard settings.lpVtbl.PutIsWebMessageEnabled(settings, true)
   var bounds: RECT
   GetClientRect(winHandle, bounds)
-  echo bounds
   discard controller.lpVtbl.put_Bounds(controller, bounds)
-  var is_visible: bool
-  discard controller.lpVtbl.get_IsVisible(controller, is_visible.addr)
-  echo is_visible
-  # discard view.lpVtbl.Navigate(view, L"https://baidu.com")
-  echo "navigation"
+  discard view.lpVtbl.Navigate(view, L"https://baidu.com")
   return S_OK
 
 proc AddRef*(self): ULONG {.stdcall.} =
