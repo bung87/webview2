@@ -8,15 +8,7 @@ const GUID = DEFINE_GUID"4E8A3389-C9D8-4BD2-B6B5-124FEE6CC14D"
 using
   self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler
 
-proc Invoke*(self;
-          errorCode: HRESULT;
-          createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    if errorCode != S_OK:
-      return errorCode
-    let hr = createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
-        createdEnvironment, winHandle, controllerCompletedHandler)
-    assert hr == S_OK
-    return hr
+
 
 proc AddRef*(self): ULONG {.stdcall.} =
   return 1

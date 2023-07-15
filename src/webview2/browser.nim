@@ -5,38 +5,79 @@ import types
 from environment_completed_handler import nil
 from controller_completed_handler import nil
 from environment_options import nil
-import std/[os, atomics,pathnorm]
+import std/[os, atomics,pathnorm,sugar]
 import loader
 from globals import nil
+
+const  IID_ICoreWebView2Controller2 = DEFINE_GUID"C979903E-D4CA-4228-92EB-47EE3FA96EAB"
+
 
 using
   self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
 
-proc newControllerCompletedHandler(): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
+proc newControllerCompletedHandler(hwnd: HWND;controller: ptr ICoreWebView2Controller;view: ptr ICoreWebView2; settings: ptr ICoreWebView2Settings): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = create(type result[])
+  result.controller = controller
+  result.view = view
+  result.settings = settings
+  result.windowHandle = hwnd
   result.lpVtbl = create(ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL)
   result.lpVtbl.QueryInterface = controller_completed_handler.QueryInterface
   result.lpVtbl.AddRef = controller_completed_handler.AddRef
   result.lpVtbl.Release = controller_completed_handler.Release
-  result.lpVtbl.Invoke = controller_completed_handler.Invoke
+  result.lpVtbl.Invoke = proc (self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler;
+      errorCode: HRESULT;
+      createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
+    if errorCode != S_OK:
+      return errorCode
+    assert createdController != nil
+    # discard createdController.lpVtbl.QueryInterface(createdController, IID_ICoreWebView2Controller2.unsafeAddr, cast[ptr pointer](controller))
+    self.controller = createdController
+    var bounds: RECT
+    GetClientRect(self.windowHandle, bounds)
+    discard self.controller.lpVtbl.AddRef(self.controller)
+    discard self.controller.lpVtbl.put_Bounds(self.controller, bounds)
+    discard self.controller.lpVtbl.put_IsVisible(self.controller, true)
+    let hr = self.controller.lpVtbl.get_CoreWebView2(self.controller, self.view.addr)
+    discard self.view.lpVtbl.AddRef(self.view)
+    if S_OK != hr:
+      return hr
+    doAssert self.view != nil
+    let hr1 = self.view.lpVtbl.get_Settings(self.view, self.settings.addr)
+    discard self.settings.lpVtbl.PutIsScriptEnabled(self.settings, true)
+    discard self.settings.lpVtbl.PutAreDefaultScriptDialogsEnabled(self.settings, true)
+    discard self.settings.lpVtbl.PutIsWebMessageEnabled(self.settings, true)
+    discard self.settings.lpVtbl.PutAreDevToolsEnabled(self.settings, true)
+    discard self.view.lpVtbl.Navigate(self.view, L"https://nim-lang.org")
+    return S_OK
 
-proc newEnvironmentCompletedHandler*(): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
+proc newEnvironmentCompletedHandler*(hwnd: HWND;controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
   result = create(type result[])
+  result.windowHandle = hwnd
+  result.controllerCompletedHandler = controllerCompletedHandler
   result.lpVtbl = create(ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL)
   result.lpVtbl.QueryInterface = environment_completed_handler.QueryInterface
   result.lpVtbl.AddRef = environment_completed_handler.AddRef
   result.lpVtbl.Release = environment_completed_handler.Release
-  result.lpVtbl.Invoke = environment_completed_handler.Invoke
+  result.lpVtbl.Invoke = proc (self:ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
+          errorCode: HRESULT;
+          createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
+    if errorCode != S_OK:
+      return errorCode
+    let hr = createdEnvironment.lpVtbl.CreateCoreWebView2Controller(
+        createdEnvironment, self.windowHandle, self.controllerCompletedHandler)
+    assert hr == S_OK
+    return hr
 
 proc resize*(b: Browser, hwnd: HWND) =
   var bounds: RECT
   let g = GetClientRect(hwnd, bounds)
   doAssert g == TRUE, $GetLastError()
-  doAssert globals.controller != nil
-  discard globals.controller.lpVtbl.put_Bounds(globals.controller, bounds)
+  doAssert b.ctx.controller != nil
+  discard b.ctx.controller.lpVtbl.put_Bounds(b.ctx.controller, bounds)
 
 proc embed*(b: Browser; wv: WebView) =
-  b.hwnd = wv.window[].handle
+  b.ctx.windowHandle = wv.window[].handle
   let exePath = getAppFilename()
   var (dir, name, ext) = splitFile(exePath)
   var dataPath = normalizePath(getEnv("AppData") / name)
@@ -45,9 +86,9 @@ proc embed*(b: Browser; wv: WebView) =
   # GetAvailableCoreWebView2BrowserVersionString(NULL, versionInfo.addr)
   # echo versionInfo
   # CoTaskMemFree(versionInfo)
-  globals.winHandle = wv.window[].handle
-  var environmentCompletedHandler = newEnvironmentCompletedHandler()
-  globals.controllerCompletedHandler = newControllerCompletedHandler()
+  var controllerCompletedHandler = newControllerCompletedHandler(b.ctx.windowHandle, b.ctx.controller, b.ctx.view, b.ctx.settings)
+  var environmentCompletedHandler = newEnvironmentCompletedHandler(b.ctx.windowHandle, controllerCompletedHandler)
+  
 
   var options = create(ICoreWebView2EnvironmentOptions)
   options.lpVtbl = create(ICoreWebView2EnvironmentOptionsVTBL)
@@ -76,15 +117,15 @@ proc embed*(b: Browser; wv: WebView) =
   DispatchMessage(msg.addr)
 
 proc navigate*(b: Browser; url: string) =
-  discard globals.view.lpVtbl.Navigate(globals.view[], +$(url))
+  discard b.ctx.view.lpVtbl.Navigate(b.ctx.view[], +$(url))
 
 
 proc AddScriptToExecuteOnDocumentCreated*(b: Browser; script: string) =
-  discard globals.view.lpVtbl.AddScriptToExecuteOnDocumentCreated(globals.view[],
+  discard b.ctx.view.lpVtbl.AddScriptToExecuteOnDocumentCreated(b.ctx.view[],
       newWideCString(script), NUll)
 
 proc ExecuteScript*(b: Browser; script: string) =
-  discard globals.view.lpVtbl.ExecuteScript(globals.view[], newWideCString(script), NUll)
+  discard b.ctx.view.lpVtbl.ExecuteScript(b.ctx.view[], newWideCString(script), NUll)
 
 # proc saveSetting*(b: Browser;setter:pointer; enabled: bool) =
 #   var flag:clong = 0

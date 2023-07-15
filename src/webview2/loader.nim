@@ -2,7 +2,7 @@ import winim
 import com
 import std/[os, strscans]
 
-{.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
+# {.passL:"/link /ASSEMBLYDEBUG /DEBUG"}
 
 type PACKAGE_VERSION {.pure.} = object
   Version:UINT64
@@ -229,12 +229,10 @@ proc GetAppUserModelIdForCurrentProcess(idOut: var PWSTR): int =
   let hr = GetCurrentProcessExplicitAppUserModelID(&appId)
   if (FAILED(hr)):
     CoTaskMemFree(appId)
-    # appId = nil;
     return hr
   idOut = appId
 
   CoTaskMemFree(appId);
-  # appId = nil
   return S_OK
 
 proc DoesPolicyExistInRoot(hKey: HKEY): bool =

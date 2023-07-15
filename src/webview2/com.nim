@@ -266,6 +266,8 @@ type
 
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler* {.pure, inheritable.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL
+    windowHandle*: HWND
+    controllerCompletedHandler*:ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
 
   ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandlerVTBL* {.pure, inheritable.} = object
     QueryInterface*: proc(self: ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler;
@@ -279,6 +281,10 @@ type
       errorCode: HRESULT; createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.}
   ICoreWebView2CreateCoreWebView2ControllerCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL
+    controller*:ptr ICoreWebView2Controller
+    view*:ptr ICoreWebView2
+    settings*: ptr ICoreWebView2Settings
+    windowHandle*: HWND
 
   ICoreWebView2ExecuteScriptCompletedHandler* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2ExecuteScriptCompletedHandlerVTBL

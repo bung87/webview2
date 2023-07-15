@@ -12,7 +12,7 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
 
     case msg
       of WM_SIZE:
-        if controller != nil:
+        if w.browser.ctx.controller != nil:
           w.browser.resize(hwnd)
       of WM_CLOSE:
         DestroyWindow(hwnd)
