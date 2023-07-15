@@ -70,7 +70,7 @@ proc  webview_init*(w: Webview): cint =
   # discard DisplayHTMLPage(w)
 
   SetWindowText(w.window.handle, w.window.config.title)
-  ShowWindow(w.window.handle, SW_SHOWDEFAULT)
+  ShowWindow(w.window.handle, SW_SHOW)
   UpdateWindow(w.window.handle)
   SetFocus(w.window.handle)
   return 0

@@ -11,7 +11,6 @@ using
 proc Invoke*(self;
           errorCode: HRESULT;
           createdEnvironment: ptr ICoreWebView2Environment): HRESULT {.stdcall.} =
-    echo "ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler.Invoke"
     if errorCode != S_OK:
       return errorCode
     let hr = createdEnvironment.lpVtbl.CreateCoreWebView2Controller(

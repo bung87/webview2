@@ -211,7 +211,12 @@ type
     get_UserDataFolder*: proc (self: ptr ICoreWebView2Environment;value: ptr LPWSTR): HRESULT {.stdcall.}
   ICoreWebView2Controller* {.pure.} = object
     lpVtbl*: ptr ICoreWebView2ControllerVTBL
-  ICoreWebView2ControllerVTBL* = object of IUnknownVtbl
+  ICoreWebView2ControllerVTBL* = object
+    QueryInterface*: proc(self: ptr ICoreWebView2Controller;
+        riid: REFIID; ppvObject: ptr pointer): HRESULT {.stdcall.}
+    AddRef*: proc (self: ptr ICoreWebView2Controller): ULONG {.stdcall.}
+    Release*: proc (self: ptr ICoreWebView2Controller): ULONG {.stdcall.}
+
     get_IsVisible*: proc (self: ptr ICoreWebView2Controller;
         is_visible: ptr bool): HRESULT {.stdcall.}
     put_IsVisible*: proc (self: ptr ICoreWebView2Controller;

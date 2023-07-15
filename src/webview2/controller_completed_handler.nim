@@ -11,13 +11,13 @@ using
 proc Invoke*(self;
     errorCode: HRESULT;
     createdController: ptr ICoreWebView2Controller): HRESULT {.stdcall.} =
-  echo "ICoreWebView2CreateCoreWebView2ControllerCompletedHandler.Invoke"
   if errorCode != S_OK:
     return errorCode
   assert createdController != nil
   controller = createdController
   var bounds: RECT
   GetClientRect(winHandle, bounds)
+  discard controller.lpVtbl.AddRef(controller)
   discard controller.lpVtbl.put_Bounds(controller, bounds)
   discard controller.lpVtbl.put_IsVisible(controller, true)
   let hr = controller.lpVtbl.get_CoreWebView2(controller, view.addr)
@@ -30,7 +30,8 @@ proc Invoke*(self;
   discard settings.lpVtbl.PutIsScriptEnabled(settings, true)
   discard settings.lpVtbl.PutAreDefaultScriptDialogsEnabled(settings, true)
   discard settings.lpVtbl.PutIsWebMessageEnabled(settings, true)
-  discard view.lpVtbl.Navigate(view, L"https://baidu.com")
+  discard settings.lpVtbl.PutAreDevToolsEnabled(settings, true)
+  discard view.lpVtbl.Navigate(view, L"https://nim-lang.org")
   return S_OK
 
 proc AddRef*(self): ULONG {.stdcall.} =
