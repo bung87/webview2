@@ -7,10 +7,8 @@ from controller_completed_handler import nil
 from environment_options import nil
 import std/[os, atomics,pathnorm,sugar]
 import loader
-from globals import nil
 
 const  IID_ICoreWebView2Controller2 = DEFINE_GUID"C979903E-D4CA-4228-92EB-47EE3FA96EAB"
-
 
 using
   self: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler
@@ -88,8 +86,6 @@ proc embed*(b: Browser; wv: WebView) =
   # CoTaskMemFree(versionInfo)
   var controllerCompletedHandler = newControllerCompletedHandler(b.ctx.windowHandle, b.ctx.controller, b.ctx.view, b.ctx.settings)
   var environmentCompletedHandler = newEnvironmentCompletedHandler(b.ctx.windowHandle, controllerCompletedHandler)
-  
-
   var options = create(ICoreWebView2EnvironmentOptions)
   options.lpVtbl = create(ICoreWebView2EnvironmentOptionsVTBL)
   options.lpVtbl.QueryInterface = environment_options.QueryInterface

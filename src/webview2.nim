@@ -1,4 +1,4 @@
-import webview2/[types,webview,browser,context,globals]
+import webview2/[types,webview,browser,context]
 import winim
 import winim/inc/winuser
 import winim/inc/mshtml
