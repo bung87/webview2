@@ -2,7 +2,7 @@ import std/[locks, tables]
 import winim
 import types
 
-type 
+type
   WebviewContextStoreObj = object
     mu: Lock
     store: Table[HWND, WebView]

@@ -33,13 +33,13 @@ type WindowConfig* = object
   maxWidth*, maxHeight*: int32
   minWidth*, minHeight*: int32
 
-type 
+type
   WindowObj = object
     config*: WindowConfig
     handle*: HWND
   Window* = ref WindowObj
 
-type 
+type
   WebViewObj = object
     window*: Window
     browser*: Browser
