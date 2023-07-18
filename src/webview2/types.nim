@@ -2,7 +2,7 @@ import winim
 import com
 # import std/[atomics]
 
-type 
+type
   BrowserContextObj* = object
     windowHandle*: HWND
     view*: ptr ICoreWebView2

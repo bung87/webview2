@@ -12,12 +12,11 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
 
     case msg
       of WM_SIZE:
-        echo "resize"
-        
+
         if w.browser.ctx.controller != nil:
+          # SetWindowLongPtr trigger WM_SIZE too, controller has not initlization yet
           w.browser.resize(hwnd)
       of WM_CREATE:
-        echo repr w
         var
           pCreate = cast[ptr CREATESTRUCT](lParam)
           plg = cast[LONG_PTR](pCreate.lpCreateParams)

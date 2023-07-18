@@ -15,9 +15,6 @@ using
 
 proc newControllerCompletedHandler(hwnd: HWND;controller: ptr ICoreWebView2Controller;view: ptr ICoreWebView2; settings: ptr ICoreWebView2Settings): ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler =
   result = create(type result[])
-  result.controller = controller
-  result.view = view
-  result.settings = settings
   result.windowHandle = hwnd
   result.lpVtbl = create(ICoreWebView2CreateCoreWebView2ControllerCompletedHandlerVTBL)
   result.lpVtbl.QueryInterface = controller_completed_handler.QueryInterface
@@ -30,23 +27,26 @@ proc newControllerCompletedHandler(hwnd: HWND;controller: ptr ICoreWebView2Contr
       return errorCode
     assert createdController != nil
     # discard createdController.lpVtbl.QueryInterface(createdController, IID_ICoreWebView2Controller2.unsafeAddr, cast[ptr pointer](controller))
-    self.controller = createdController
+    var w = cast[Webview](GetWindowLongPtr(self.windowHandle, GWLP_USERDATA))
+
+    w.browser.ctx.controller = createdController
     var bounds: RECT
     GetClientRect(self.windowHandle, bounds)
-    discard self.controller.lpVtbl.AddRef(self.controller)
-    discard self.controller.lpVtbl.put_Bounds(self.controller, bounds)
-    discard self.controller.lpVtbl.put_IsVisible(self.controller, true)
-    let hr = self.controller.lpVtbl.get_CoreWebView2(self.controller, self.view.addr)
-    discard self.view.lpVtbl.AddRef(self.view)
+    discard w.browser.ctx.controller.lpVtbl.AddRef(w.browser.ctx.controller)
+    discard w.browser.ctx.controller.lpVtbl.put_Bounds(w.browser.ctx.controller, bounds)
+    discard w.browser.ctx.controller.lpVtbl.put_IsVisible(w.browser.ctx.controller, true)
+    let hr = w.browser.ctx.controller.lpVtbl.get_CoreWebView2(w.browser.ctx.controller, w.browser.ctx.view.addr)
+    discard w.browser.ctx.view.lpVtbl.AddRef(w.browser.ctx.view)
     if S_OK != hr:
       return hr
-    doAssert self.view != nil
-    let hr1 = self.view.lpVtbl.get_Settings(self.view, self.settings.addr)
-    discard self.settings.lpVtbl.PutIsScriptEnabled(self.settings, true)
-    discard self.settings.lpVtbl.PutAreDefaultScriptDialogsEnabled(self.settings, true)
-    discard self.settings.lpVtbl.PutIsWebMessageEnabled(self.settings, true)
-    discard self.settings.lpVtbl.PutAreDevToolsEnabled(self.settings, true)
-    discard self.view.lpVtbl.Navigate(self.view, L"https://nim-lang.org")
+    doAssert w.browser.ctx.view != nil
+    let hr1 = w.browser.ctx.view.lpVtbl.get_Settings(w.browser.ctx.view, w.browser.ctx.settings.addr)
+    discard w.browser.ctx.settings.lpVtbl.PutIsScriptEnabled(w.browser.ctx.settings, true)
+    discard w.browser.ctx.settings.lpVtbl.PutAreDefaultScriptDialogsEnabled(w.browser.ctx.settings, true)
+    discard w.browser.ctx.settings.lpVtbl.PutIsWebMessageEnabled(w.browser.ctx.settings, true)
+    discard w.browser.ctx.settings.lpVtbl.PutAreDevToolsEnabled(w.browser.ctx.settings, true)
+    
+    discard w.browser.ctx.view.lpVtbl.Navigate(w.browser.ctx.view, L"https://nim-lang.org")
     return S_OK
 
 proc newEnvironmentCompletedHandler*(hwnd: HWND;controllerCompletedHandler: ptr ICoreWebView2CreateCoreWebView2ControllerCompletedHandler): ptr ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler =
