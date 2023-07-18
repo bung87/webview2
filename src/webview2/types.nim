@@ -3,12 +3,13 @@ import com
 # import std/[atomics]
 
 type 
-  BrowserContext* = object
+  BrowserContextObj* = object
     windowHandle*: HWND
     view*: ptr ICoreWebView2
     controller*: ptr ICoreWebView2Controller
     settings*: ptr ICoreWebView2Settings
-  BrowserConfig* = object
+  BrowserContext* = ref BrowserContextObj
+  BrowserConfigObj* = object
     initialURL*:string
     builtInErrorPage*     :bool
     defaultContextMenus*  :bool
@@ -19,6 +20,7 @@ type
     statusBar*            :bool
     webMessage*           :bool
     zoomControl*          :bool
+  BrowserConfig* = ref BrowserConfigObj
   BrowserObj = object
     ctx*: BrowserContext
     config*: BrowserConfig

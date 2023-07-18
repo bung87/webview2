@@ -13,9 +13,15 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
     case msg
       of WM_SIZE:
         echo "resize"
+        
         if w.browser.ctx.controller != nil:
-          
           w.browser.resize(hwnd)
+      of WM_CREATE:
+        echo repr w
+        var
+          pCreate = cast[ptr CREATESTRUCT](lParam)
+          plg = cast[LONG_PTR](pCreate.lpCreateParams)
+        hwnd.SetWindowLongPtr(GWLP_USERDATA, plg)
       of WM_CLOSE:
         DestroyWindow(hwnd)
       of WM_DESTROY:
@@ -64,10 +70,10 @@ proc  webview_init*(w: Webview): cint =
     rect.right - rect.left, rect.bottom - rect.top,
     HWND_DESKTOP, cast[HMENU](NULL), hInstance, cast[LPVOID](w))
   if (w.window.handle == 0):
-    # OleUninitialize()
+    OleUninitialize()
     return -1
 
-  SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
+  # SetWindowLongPtr(w.window.handle, GWLP_USERDATA, cast[LONG_PTR](w))
   # webviewContext.set(w.window.handle, w)
   # discard DisplayHTMLPage(w)
 

@@ -21,7 +21,8 @@ proc newWebView*():WebView =
     zoomControl:          true,
   )
   var browser = Browser(
-    config: browserConfig
+    config: browserConfig,
+    ctx: BrowserContext()
     )
   result.window = window
   result.browser = browser
