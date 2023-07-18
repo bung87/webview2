@@ -12,7 +12,9 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
 
     case msg
       of WM_SIZE:
+        echo "resize"
         if w.browser.ctx.controller != nil:
+          
           w.browser.resize(hwnd)
       of WM_CLOSE:
         DestroyWindow(hwnd)
@@ -45,8 +47,8 @@ proc  webview_init*(w: Webview): cint =
   style = WS_OVERLAPPEDWINDOW
   # if not w.resizable:
   #   style = WS_OVERLAPPED or WS_CAPTION or WS_MINIMIZEBOX or WS_SYSMENU
-  rect.left = 0;
-  rect.top = 0;
+  rect.left = 0
+  rect.top = 0
   rect.right = w.window.config.width
   rect.bottom = w.window.config.height
   AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, 0)
