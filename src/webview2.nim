@@ -19,8 +19,8 @@ proc wndproc(hwnd: HWND, msg: UINT, wParam: WPARAM, lParam: LPARAM): LRESULT {.s
       of WM_CREATE:
         var
           pCreate = cast[ptr CREATESTRUCT](lParam)
-          plg = cast[LONG_PTR](pCreate.lpCreateParams)
-        hwnd.SetWindowLongPtr(GWLP_USERDATA, plg)
+          p = cast[LONG_PTR](pCreate.lpCreateParams)
+        hwnd.SetWindowLongPtr(GWLP_USERDATA, p)
       of WM_CLOSE:
         DestroyWindow(hwnd)
       of WM_DESTROY:
@@ -80,6 +80,7 @@ proc  webview_init*(w: Webview): cint =
   ShowWindow(w.window.handle, SW_SHOW)
   UpdateWindow(w.window.handle)
   SetFocus(w.window.handle)
+  w.browser.embed(w)
   return 0
 
 proc webview_loop*(w: Webview, blocking:cint):cint =
@@ -138,6 +139,5 @@ when isMainModule:
   SetCurrentProcessExplicitAppUserModelID("webview2 app")
   var v = newWebView()
   assert v.webview_init() == 0
-  v.initWebView
 
   v.run
