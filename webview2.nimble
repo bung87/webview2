@@ -10,6 +10,4 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.6.0"
-requires "memlib"
 requires "winim"
-requires "ptr_math"
